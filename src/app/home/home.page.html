@@ -1,41 +1,52 @@
-
 <ion-menu side="start" content-id="main-content">
-  <ion-header>
-    <ion-toolbar translucent>
-      <ion-title>Menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content>
-    <ion-list>
-      <ion-menu-toggle auto-hide="true">
-      <ion-item [routerDirection]="'root'" (click)="simAI()">
-        <ion-icon name="locate" slot="start"></ion-icon>
-        <ion-label>Sim AI</ion-label>
-      </ion-item>
-      <ion-item [routerDirection]="'root'" (click)="simAR()">
-        <ion-icon name="paper-plane" slot="start"></ion-icon>
-        <ion-label>Sim AR</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon name="locate" slot="start"></ion-icon>
-        <ion-label>About</ion-label>
-      </ion-item>
-      </ion-menu-toggle>
-    </ion-list>
-  </ion-content>
+    <ion-header>
+        <ion-toolbar translucent>
+            <ion-title>Menu</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content>
+        <ion-list>
+            <ion-menu-toggle auto-hide="true">
+                <ion-item [routerDirection]="'root'" (click)="simAR()">
+                    <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>Sim AR</ion-label>
+                </ion-item>
+                <ion-item [routerDirection]="'root'" (click)="simAI()">
+                    <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>Sim AI</ion-label>
+                </ion-item>
+                <ion-item [routerDirection]="'root'" (click)="simTG()">
+                    <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>Sim TG</ion-label>
+                </ion-item>
+                <ion-item [routerDirection]="'root'" (click)="simGE()">
+                    <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>Sim GE</ion-label>
+                </ion-item>
+                <ion-item [routerDirection]="'root'" (click)="showCurrentCanton()">
+                    <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>Locate</ion-label>
+                </ion-item>
+                <ion-item>
+                    <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>About</ion-label>
+                </ion-item>
+            </ion-menu-toggle>
+        </ion-list>
+    </ion-content>
 </ion-menu>
 <div class="ion-page" id="main-content">
-  <ion-header [translucent]="true">
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-title>
-        {{canton}}
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content [fullscreen]="true">
-    <div id="map" style="height:100%;"></div>
-  </ion-content>
+    <ion-header [translucent]="true">
+        <ion-toolbar>
+            <ion-buttons slot="start">
+                <ion-menu-button></ion-menu-button>
+            </ion-buttons>
+            <ion-title>
+                {{title}}
+            </ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content [fullscreen]="false">
+        <div id="map" style="height:100%;"></div>
+    </ion-content>
 </div>

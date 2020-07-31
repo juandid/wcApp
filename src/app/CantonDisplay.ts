@@ -1,0 +1,31 @@
+export class CantonDisplay {
+    public static readonly SG	= new CantonDisplay(' #00cc00','#99ff99'); //grü)
+    public static readonly NW	= new CantonDisplay(' #ff0000','#ff9999'); //rot)
+    public static readonly AR	= new CantonDisplay(' #666666','#e0e0d1'); //grau)
+    public static readonly UR	= new CantonDisplay(' #ffff00','#ffff99'); //ge)
+    public static readonly AI	= new CantonDisplay(' #666666','#e0e0d1'); //grau)
+    public static readonly TI	= new CantonDisplay(' #4040bf','#b3b3e6'); //bl)
+    public static readonly TG	= new CantonDisplay(' #00cc00','#99ff99'); //grü)
+    public static readonly VS	= new CantonDisplay(' #ff0000','#ff9999'); //rot)
+    public static readonly GR	= new CantonDisplay(' #666666','#e0e0d1'); //grau)
+    public static readonly BE	= new CantonDisplay(' #ffff00','#ffff99'); //ge)
+    public static readonly SH	= new CantonDisplay(' #ffff00','#ffff99'); //ge)
+    public static readonly SO	= new CantonDisplay(' #ff0000','#ff9999'); //rot)
+    public static readonly ZH	= new CantonDisplay(' #4040bf','#b3b3e6'); //bl)
+    public static readonly BS	= new CantonDisplay(' #666666','#e0e0d1'); //grau)
+    public static readonly SZ	= new CantonDisplay(' #ff0000','#ff9999'); //rot)
+    public static readonly BL	= new CantonDisplay(' #ff0000','#ff9999'); //rot)
+    public static readonly GL	= new CantonDisplay(' #ff0000','#ff9999'); //rot)
+    public static readonly JU	= new CantonDisplay(' #ff0000','#ff9999'); //rot)
+    public static readonly AG	= new CantonDisplay(' #666666','#e0e0d1'); //grau)
+    public static readonly NE	= new CantonDisplay(' #00cc00','#99ff99'); //grü)
+    public static readonly ZG	= new CantonDisplay(' #4040bf','#b3b3e6'); //bl)
+    public static readonly FR	= new CantonDisplay(' #666666','#e0e0d1'); //grau)
+    public static readonly LU	= new CantonDisplay(' #4040bf','#b3b3e6'); //bl)
+    public static readonly VD	= new CantonDisplay(' #00cc00','#99ff99'); //grü)
+    public static readonly OW	= new CantonDisplay(' #ff0000','#ff9999'); //rot)
+    public static readonly GE	= new CantonDisplay(' #ffff00','#ffff99'); //ge)
+
+    private constructor(public readonly color: string, public readonly fillColor: string) {
+    }
+}
