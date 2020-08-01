@@ -3,7 +3,6 @@ import {Map, tileLayer, marker, icon, CRS, polygon, LatLng, LayerGroup, latLngBo
 import { Plugins } from '@capacitor/core';
 
 import {GeoAdminChService} from './../geo-admin-ch.service';
-import {Lv95} from "../lv95";
 import {CantonSearchResult} from "../CantonSearchResult";
 import {AlertController} from "@ionic/angular";
 import {CantonDisplay} from "../CantonDisplay";
@@ -29,12 +28,12 @@ export class HomePage {
   //canton selected
   csr: CantonSearchResult;
   title: string;
-  abbreviation: string;
+  abbr: string;
 
   //Hint Outside Switzerland
   txt_hint: string;
   txt_outside_ch: string;
-
+  txt_dismiss: string;
 
   constructor(
       private geoAdminChService: GeoAdminChService,
@@ -44,13 +43,6 @@ export class HomePage {
     //empty constructor
     this.title = "Standort wird ermittelt...";
     this.layerGroup = new LayerGroup<any>();
-
-    var greenIcon = icon({
-      iconUrl: 'SG.png',
-      iconSize:     [164, 207], // size of the icon
-      iconAnchor:   [80, 207], // point of the icon which will correspond to marker's location
-    });
-
   }
 
   // The below function is added
@@ -97,7 +89,7 @@ export class HomePage {
       var bounds = latLngBounds(southWest, northEast);
 
       this.map.setMaxZoom(11);
-      this.map.setMinZoom(8);
+      this.map.setMinZoom(7);
 
       this.map.setMaxBounds(bounds);
 
@@ -126,11 +118,15 @@ export class HomePage {
         //center to values given by bbox
         this.map.setView([centerLat,centerLng], 9);
 
-        //console.log(this.canton);
-        //console.log(this.csr.results[0].attributes.ak);
-        const cantonDisplay: CantonDisplay = CantonDisplay[this.csr.results[0].attributes.ak];
-
-        marker([this.latitude,this.longitude]).addTo(this.layerGroup);
+        this.abbr = this.csr.results[0].attributes.ak;
+        const cantonDisplay: CantonDisplay = CantonDisplay[this.abbr];
+        var cantonIcon = icon({
+          iconUrl: '/assets/icon/' + this.abbr + '.png',
+          iconSize:     [20, 25], // size of the icon
+          iconAnchor:   [10, 25], // point of the icon which will correspond to marker's location
+        });
+        marker([this.latitude,this.longitude], {icon: cantonIcon}).addTo(this.layerGroup);
+        //marker([this.latitude,this.longitude]).addTo(this.layerGroup);
 
         for (let polygonArray of this.csr.results[0].geometry.rings) {
           //console.log("number of points " + polygonArray.length);
@@ -157,6 +153,9 @@ export class HomePage {
     this.translate.get('txt_outside_ch').subscribe((res: string) => {
       this.txt_outside_ch = res;
     });
+    this.translate.get('txt_dismiss').subscribe((res: string) => {
+      this.txt_dismiss = res;
+    });
   }
 
   presentOutsideSwitzerlandAlert() {
@@ -165,46 +164,16 @@ export class HomePage {
       animated: true,
       header: this.txt_hint,
       message: this.txt_outside_ch,
-      buttons: ['Verstanden']
+      buttons: [this.txt_dismiss]
     }).then(alertEl => alertEl.present());
 
   }
 
-  simAI() {
-
-    this.latitude = 47.334930;
-    this.longitude = 9.406594;
+  simKt(abbr: string) {
+    const cantonDisplay: CantonDisplay = CantonDisplay[abbr];
+    this.latitude = cantonDisplay.lat;
+    this.longitude = cantonDisplay.lng;
     this.accuracy = 10;
-
-    this.showCanton();
-
-  }
-
-  simTG() {
-
-    this.latitude = 47.495700;
-    this.longitude = 9.463580;
-    this.accuracy = 10;
-
-    this.showCanton();
-
-  }
-
-  simAR() {
-
-    this.latitude = 47.411130;
-    this.longitude = 9.442970;
-    this.accuracy = 10;
-
-    this.showCanton();
-  }
-
-  simGE() {
-
-    this.latitude = 46.204391;
-    this.longitude = 6.143158;
-    this.accuracy = 10;
-
     this.showCanton();
   }
 
