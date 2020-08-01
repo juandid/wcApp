@@ -1,7 +1,7 @@
 <ion-menu side="start" content-id="main-content">
     <ion-header>
         <ion-toolbar translucent>
-            <ion-title>Menu</ion-title>
+            <ion-title>{{ 'menu.title' | translate }}</ion-title>
         </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -22,6 +22,10 @@
                 <ion-item [routerDirection]="'root'" (click)="simGE()">
                     <ion-icon name="locate" slot="start"></ion-icon>
                     <ion-label>Sim GE</ion-label>
+                </ion-item>
+                <ion-item [routerDirection]="'root'" (click)="simVorarlberg()">
+                    <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>Sim Vorarlberg</ion-label>
                 </ion-item>
                 <ion-item [routerDirection]="'root'" (click)="showCurrentCanton()">
                     <ion-icon name="locate" slot="start"></ion-icon>

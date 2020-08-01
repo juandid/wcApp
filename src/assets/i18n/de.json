@@ -1,0 +1,11 @@
+{
+  "menu": {
+    "title": "Menu (de)"
+  },
+  "txt_hint": "Hinweis",
+  "txt_outside_ch": "Du befindest dich nicht in der Schweiz. Darum kann kein Kanton ermittelt werden.",
+  "txt_dismiss": "Verstanden",
+  "TITLE": "Hello sir",
+  "TITLE_2": "Hello {{value}}"
+
+}
