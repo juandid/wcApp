@@ -2,9 +2,9 @@
   "menu": {
     "title": "Menu (en)"
   },
-  "txt_hint": "Hint",
-  "txt_outside_ch": "You are not in Switzerland. Therefore no canton can be determined.",
-  "txt_dismiss": "Dismiss",
+  "txthint": "Hint",
+  "txtoutsidech": "You are not in Switzerland. Therefore no canton can be determined.",
+  "txtdismiss": "Dismiss",
   "TITLE": "Hello sir",
   "TITLE_2": "Hello {{value}}"
 }

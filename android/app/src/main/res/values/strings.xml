@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kanton?</string>
+    <string name="title_activity_main">Kanton?</string>
+    <string name="package_name">com.juandid.wc.app</string>
+    <string name="custom_url_scheme">com.juandid.wc.app</string>
+</resources>

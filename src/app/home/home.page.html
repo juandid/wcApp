@@ -27,12 +27,16 @@
                     <ion-icon name="locate" slot="start"></ion-icon>
                     <ion-label>Sim Vorarlberg</ion-label>
                 </ion-item>
-                <ion-item [routerDirection]="'root'" (click)="showCurrentCanton()">
+                <ion-item [routerDirection]="'root'" (click)="simRandom()">
                     <ion-icon name="locate" slot="start"></ion-icon>
-                    <ion-label>Locate</ion-label>
+                    <ion-label>Sim Random</ion-label>
                 </ion-item>
-                <ion-item>
+                <ion-item [routerDirection]="'root'" (click)="dumpCurl()">
                     <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>Dump Curl</ion-label>
+                </ion-item>
+                <ion-item [href]="'about'">
+                    <ion-icon name="information-outline" slot="start"></ion-icon>
                     <ion-label>About</ion-label>
                 </ion-item>
             </ion-menu-toggle>
@@ -48,9 +52,14 @@
             <ion-title>
                 {{title}}
             </ion-title>
+            <ion-buttons slot="end">
+                <ion-button id="locate" [routerDirection]="'root'" (click)="showCurrentCanton()">
+                    <ion-icon slot="start" name="refresh"></ion-icon>
+                </ion-button>
+            </ion-buttons>
         </ion-toolbar>
     </ion-header>
-    <ion-content [fullscreen]="false">
+    <ion-content>
         <div id="map" style="height:100%;"></div>
     </ion-content>
 </div>
