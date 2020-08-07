@@ -8,6 +8,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 
+
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -20,8 +21,8 @@ export function createTranslateLoader(http: HttpClient) {
 export class AppComponent {
 
   public title: string;
-  public title_2: string;
   public language: string;
+
 
   constructor(
     private platform: Platform,
@@ -37,8 +38,6 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
-    //this.translate.setDefaultLang('en');
-    //this.translate.use('de');
 
     this.getDeviceLanguage();
 
@@ -47,9 +46,6 @@ export class AppComponent {
   _initialiseTranslation(): void {
     this.translate.get('TITLE').subscribe((res: string) => {
       this.title = res;
-    });
-    this.translate.get('TITLE_2', { value: 'John' }).subscribe((res: string) => {
-      this.title_2 = res;
     });
   }
 
@@ -74,10 +70,10 @@ export class AppComponent {
 
   getDeviceLanguage() {
     if (window.Intl && typeof window.Intl === 'object') {
-      console.log("navigator.language = " + navigator.language);
-      this._initTranslate(navigator.language)
+      console.log('navigator.language = ' + navigator.language);
+      this._initTranslate(navigator.language);
     }else{
-      console.log("failed to retrieve language. using fallback en");
+      console.log('failed to retrieve language. using fallback en');
       this._initTranslate('en');
     }
   }

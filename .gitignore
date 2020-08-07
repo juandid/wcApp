@@ -18,6 +18,8 @@ log.txt
 npm-debug.log*
 *.iml
 
+out-tsc
+
 /.idea
 /.ionic
 /.sass-cache

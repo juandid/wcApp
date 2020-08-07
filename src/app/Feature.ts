@@ -1,5 +1,5 @@
-import {CantonAttributes} from "./CantonAttributes";
-import {Geometry} from "./Geometry";
+import {CantonAttributes} from './CantonAttributes';
+import {Geometry} from './Geometry';
 
 export interface Feature {
     id: number;
@@ -7,6 +7,6 @@ export interface Feature {
     layerBodId: string;
     layerName: string;
     attributes: CantonAttributes;
-    bbox : Array<number>;
+    bbox: Array<number>;
     geometry: Geometry;
 }

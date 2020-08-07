@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {Map, tileLayer, marker, icon, CRS, polygon, LatLng, LayerGroup, latLngBounds, latLng} from 'leaflet';
+import {Map as GeoMap, tileLayer, marker, icon, CRS, polygon, LatLng, LayerGroup, latLngBounds, latLng} from 'leaflet';
 import { Plugins } from '@capacitor/core';
 
-import {GeoAdminChService} from './../geo-admin-ch.service';
+import {GeoAdminChService} from '../geo-admin-ch.service';
 import {CantonSearchResult} from '../CantonSearchResult';
 import {AlertController} from '@ionic/angular';
 import {CantonDisplay} from '../CantonDisplay';
@@ -19,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class HomePage {
 
   // map presentation
-  map: Map;
+  map: GeoMap;
   layerGroup: LayerGroup;
   // geolocation
   latitude: number;
@@ -43,6 +43,7 @@ export class HomePage {
     // empty constructor
     this.title = 'Standort wird ermittelt...';
     this.layerGroup = new LayerGroup<any>();
+
   }
 
   // The below function is added
@@ -74,7 +75,7 @@ export class HomePage {
 
     if ( this.map === undefined ) {
 
-      this.map = new Map('map', {crs: CRS.EPSG3857, worldCopyJump: false});
+      this.map = new GeoMap('map', {crs: CRS.EPSG3857, worldCopyJump: false});
       // ch.swisstopo.pixelkarte-grau
       // ch.swisstopo.pixelkarte-farbe
       tileLayer('https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg',
@@ -112,6 +113,7 @@ export class HomePage {
         this.presentOutsideSwitzerlandAlert();
       }else{
 
+        this.abbr = this.csr.results[0].attributes.ak;
         this.title = this.csr.results[0].attributes.name;
 
         const bBoxArr: Array<number> = this.csr.results[0].bbox;
@@ -130,7 +132,7 @@ export class HomePage {
         // center to values given by bbox
         this.map.setView([centerLat, centerLng], zoom);
 
-        this.abbr = this.csr.results[0].attributes.ak;
+
         const cantonDisplay: CantonDisplay = CantonDisplay[this.abbr];
         const cantonIcon = icon({
           iconUrl: '/assets/icon/' + this.abbr + '.png',
@@ -141,22 +143,30 @@ export class HomePage {
         // marker([this.latitude,this.longitude]).addTo(this.layerGroup);
 
         let cnt = 0;
-        for (const polygonArray of this.csr.results[0].geometry.rings) {
-          // console.log("number of points " + polygonArray.length);
+        for ( const polygonArray of this.geoAdminChService.getRingsFor(this.abbr)) {
+
           const polyArr: LatLng[] = [];
           // swap x and y
           for (const posArray of polygonArray){
             const latlng = new LatLng(posArray[1], posArray[0]);
             polyArr.push(latlng);
           }
-          if (cnt === 0 && this.abbr === 'SGXXXXXXX'){
-            polygon( [
-              polyArr, // outer ring
-              [[47.415659, 9.4899445], [47.334930, 9.406594], [47.385849, 9.278850]] // hole
-            ], {color: cantonDisplay.color, fillColor: cantonDisplay.fillColor, fillOpacity: 0.5}).addTo(this.layerGroup);
-          }else{
-            polygon( polyArr, {color: cantonDisplay.color, fillColor: cantonDisplay.fillColor, fillOpacity: 0.5}).addTo(this.layerGroup);
+
+
+          let latlngs = [
+            [[37, -109.05], [41, -109.03], [41, -102.05], [37, -102.04]], // outer ring
+            [[37.29, -108.58], [40.71, -108.58], [40.71, -102.50], [37.29, -102.50]] // hole
+          ];
+
+          const polygons: LatLng[][][] = [[ polyArr], []];
+
+          const exclusions = this.geoAdminChService.getExclusionsFor(this.abbr, cnt);
+          for ( const exclusion of exclusions){
+
+            polygons[1].push(this.geoAdminChService.getAndSwapPolygonCoordinates(exclusion.cantInd, exclusion.ringInd));
           }
+          polygon( polygons, {color: cantonDisplay.color, fillColor: cantonDisplay.fillColor, fillOpacity: 0.5}).addTo(this.layerGroup);
+
           cnt++;
         }
 
@@ -168,14 +178,15 @@ export class HomePage {
 
   }
 
+
   _initialiseTranslation(): void {
     this.translate.get('txthint').subscribe((res: string) => {
       this.txthint = res;
     });
-    this.translate.get('txt_outside_ch').subscribe((res: string) => {
+    this.translate.get('txtoutsidech').subscribe((res: string) => {
       this.txtoutsidech = res;
     });
-    this.translate.get('txt_dismiss').subscribe((res: string) => {
+    this.translate.get('txtdismiss').subscribe((res: string) => {
       this.txtdismiss = res;
     });
   }
@@ -199,17 +210,6 @@ export class HomePage {
     this.showCanton();
   }
 
-  dumpCurl() {
-
-    const arr: string[] = Object.keys(CantonDisplay);
-    for (const abbr of arr) {
-      const cantonDisplay: CantonDisplay = CantonDisplay[abbr];
-      console.log('curl --location --request GET \'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometryType=esriGeometryPoint&tolerance=0&lang=de&layers=all:ch.swisstopo.swissboundaries3d-kanton-flaeche.fill&sr=4326&geometry=' + cantonDisplay.lng + ',' + cantonDisplay.lat + '\' > ' + abbr + '.json');
-    }
-
-  }
-
-
   simRandom() {
     const arr: string[] = Object.keys(CantonDisplay);
     const random = Math.floor(Math.random() * arr.length);
@@ -230,4 +230,6 @@ export class HomePage {
 
     this.showCanton();
   }
+
+
 }
