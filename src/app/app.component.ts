@@ -23,7 +23,6 @@ export class AppComponent {
   public title: string;
   public language: string;
 
-
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -43,15 +42,8 @@ export class AppComponent {
 
   }
 
-  _initialiseTranslation(): void {
-    this.translate.get('TITLE').subscribe((res: string) => {
-      this.title = res;
-    });
-  }
-
   _translateLanguage(): void {
     this.translate.use(this.language);
-    this._initialiseTranslation();
   }
 
 

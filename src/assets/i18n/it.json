@@ -5,6 +5,5 @@
   "txthint": "Hinweis",
   "txtoutsidech": "Du befindest dich nicht in der Schweiz. Darum kann kein Kanton ermittelt werden.",
   "txtdismiss": "Dismiss",
-  "TITLE": "Hello sir",
-  "TITLE_2": "Hello {{value}}"
+  "txtlocating": "Determining position..."
 }

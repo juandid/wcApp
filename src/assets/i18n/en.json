@@ -5,6 +5,5 @@
   "txthint": "Hint",
   "txtoutsidech": "You are not in Switzerland. Therefore no canton can be determined.",
   "txtdismiss": "Dismiss",
-  "TITLE": "Hello sir",
-  "TITLE_2": "Hello {{value}}"
+  "txtlocating": "Determining position..."
 }

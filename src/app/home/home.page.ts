@@ -10,6 +10,8 @@ import {CantonDisplay} from '../CantonDisplay';
 const { Geolocation } = Plugins;
 
 import { TranslateService } from '@ngx-translate/core';
+import {MapViewSettings} from '../MapViewSettings';
+
 
 @Component({
   selector: 'app-home',
@@ -26,7 +28,6 @@ export class HomePage {
   longitude: number;
   accuracy: number;
   // canton selected
-  csr: CantonSearchResult;
   title: string;
   abbr: string;
 
@@ -34,6 +35,7 @@ export class HomePage {
   txthint: string;
   txtoutsidech: string;
   txtdismiss: string;
+  txtlocating: string;
 
   constructor(
       private geoAdminChService: GeoAdminChService,
@@ -41,7 +43,7 @@ export class HomePage {
       private translate: TranslateService
   ) {
     // empty constructor
-    this.title = 'Standort wird ermittelt...';
+    this.title = this.txtlocating;
     this.layerGroup = new LayerGroup<any>();
 
   }
@@ -61,7 +63,7 @@ export class HomePage {
       this.longitude = resp.coords.longitude;
       this.accuracy = resp.coords.accuracy;
 
-      console.log(this.latitude + ',' + this.longitude);
+      // console.log(this.latitude + ',' + this.longitude);
 
       this.showCanton();
 
@@ -103,44 +105,28 @@ export class HomePage {
     // initialize
     this.layerGroup = new LayerGroup<any>();
 
+    this.abbr = this.geoAdminChService.findCanton(this.longitude, this.latitude);
 
-    // retrieve canton data
-    this.geoAdminChService.getCanton(this.longitude, this.latitude).subscribe( resp => {
-      // console.log(resp);
-      this.csr = resp.body;
-      const result = this.csr.results[0];
-      if (result === undefined){
+
+    if (this.abbr === undefined){
         this.presentOutsideSwitzerlandAlert();
       }else{
 
-        this.abbr = this.csr.results[0].attributes.ak;
-        this.title = this.csr.results[0].attributes.name;
-
-        const bBoxArr: Array<number> = this.csr.results[0].bbox;
-        const centerLat = (bBoxArr[1] + bBoxArr[3]) / 2;
-        const centerLng = (bBoxArr[0] + bBoxArr[2]) / 2;
-        // const extentLat = bBoxArr[3] - bBoxArr[1];
-        // console.log("extentLat=" + extentLat);
-        const extentLng = bBoxArr[2] - bBoxArr[0];
-        console.log('extentLng=' + extentLng);
-
-        // extentLng=0.31200399999999995 --> zoom 10
-        // extentLng = 0.8941440000000007 > zoom 9
-        // extentLng=1.875807 --> 8
-        const zoom = Math.round(10.4 - (extentLng * 1.5 ));
-        console.log('zoom=' + zoom);
-        // center to values given by bbox
-        this.map.setView([centerLat, centerLng], zoom);
-
 
         const cantonDisplay: CantonDisplay = CantonDisplay[this.abbr];
+        this.title = cantonDisplay.label;
+
+        const mvs: MapViewSettings = this.geoAdminChService.calculateMapViewSettings(this.abbr);
+        // center to values given by bbox
+        this.map.setView([mvs.centerLat, mvs.centerLng], 10);
+
+
         const cantonIcon = icon({
           iconUrl: '/assets/icon/' + this.abbr + '.png',
           iconSize:     [20, 25], // size of the icon
           iconAnchor:   [10, 25], // point of the icon which will correspond to marker's location
         });
         marker([this.latitude, this.longitude], {icon: cantonIcon}).addTo(this.layerGroup);
-        // marker([this.latitude,this.longitude]).addTo(this.layerGroup);
 
         let cnt = 0;
         for ( const polygonArray of this.geoAdminChService.getRingsFor(this.abbr)) {
@@ -148,33 +134,44 @@ export class HomePage {
           const polyArr: LatLng[] = [];
           // swap x and y
           for (const posArray of polygonArray){
-            const latlng = new LatLng(posArray[1], posArray[0]);
-            polyArr.push(latlng);
+            polyArr.push(new LatLng(posArray[1], posArray[0]));
           }
-
-
-          let latlngs = [
-            [[37, -109.05], [41, -109.03], [41, -102.05], [37, -102.04]], // outer ring
-            [[37.29, -108.58], [40.71, -108.58], [40.71, -102.50], [37.29, -102.50]] // hole
-          ];
 
           const polygons: LatLng[][][] = [[ polyArr], []];
 
           const exclusions = this.geoAdminChService.getExclusionsFor(this.abbr, cnt);
-          for ( const exclusion of exclusions){
+          if ( this.abbr === 'SG' && cnt === 0){
 
-            polygons[1].push(this.geoAdminChService.getAndSwapPolygonCoordinates(exclusion.cantInd, exclusion.ringInd));
+            // extra handling of containing polygons
+            for ( const exclusion of exclusions){
+              // AR polygon with all AI polygons
+              // console.log(exclusion.cantInd + ':' + exclusion.ringInd);
+              //
+            }
+
+            // union of ar 0 and all ai exclusions
+            polygons[1].push(this.geoAdminChService.getUnionedPolygonsOfArAndAi());
+            // exclusion of tg 1
+            polygons[1].push(this.geoAdminChService.getAndSwapPolygonCoordinates(this.geoAdminChService.getCantInd('TG'), 1));
+
+          } else {
+            for ( const exclusion of exclusions){
+              polygons[1].push(this.geoAdminChService.getAndSwapPolygonCoordinates(exclusion.cantInd, exclusion.ringInd));
+            }
           }
-          polygon( polygons, {color: cantonDisplay.color, fillColor: cantonDisplay.fillColor, fillOpacity: 0.5}).addTo(this.layerGroup);
+
+          // tslint:disable-next-line:max-line-length
+          polygon( polygons, {color: cantonDisplay.color, fillColor: cantonDisplay.fillColor, fillOpacity: cantonDisplay.fillOpacity}).addTo(this.layerGroup);
 
           cnt++;
         }
 
         // finally add all objects to the map
         this.map.addLayer(this.layerGroup);
-        // this.map.fitBounds(this.layerGroup.getBounds())
+
+
+        this.map.fitBounds(this.geoAdminChService.getBounds(this.abbr));
       }
-    });
 
   }
 
@@ -188,6 +185,9 @@ export class HomePage {
     });
     this.translate.get('txtdismiss').subscribe((res: string) => {
       this.txtdismiss = res;
+    });
+    this.translate.get('txtlocating').subscribe((res: string) => {
+      this.txtlocating = res;
     });
   }
 
@@ -231,5 +231,13 @@ export class HomePage {
     this.showCanton();
   }
 
+  simHornTG() {
+
+    this.latitude = 47.495701;
+    this.longitude = 9.463580;
+    this.accuracy = 10;
+
+    this.showCanton();
+  }
 
 }
