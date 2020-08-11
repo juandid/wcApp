@@ -1,9 +1,10 @@
 {
   "menu": {
-    "title": "Menu (fr)"
+    "title": "Menu"
   },
-  "txthint": "Hinweis",
-  "txtoutsidech": "Du befindest dich nicht in der Schweiz. Darum kann kein Kanton ermittelt werden.",
-  "txtdismiss": "Dismiss",
-  "txtlocating": "Determining position..."
+  "txthint": "Remarque",
+  "txtoutsidech": "Vous n'êtes pas en Suisse. Aucun canton ne peut donc être déterminé.",
+  "txtdismiss": "D'accord",
+  "txtlocating": "Trouver la position...",
+  "txtyouareat": "Vous êtes dans le canton de"
 }

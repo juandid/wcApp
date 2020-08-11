@@ -36,6 +36,7 @@ export class HomePage {
   txtoutsidech: string;
   txtdismiss: string;
   txtlocating: string;
+  txtyouareat: string;
 
   constructor(
       private geoAdminChService: GeoAdminChService,
@@ -63,8 +64,6 @@ export class HomePage {
       this.longitude = resp.coords.longitude;
       this.accuracy = resp.coords.accuracy;
 
-      // console.log(this.latitude + ',' + this.longitude);
-
       this.showCanton();
 
     }).catch((error) => {
@@ -81,7 +80,7 @@ export class HomePage {
       // ch.swisstopo.pixelkarte-grau
       // ch.swisstopo.pixelkarte-farbe
       tileLayer('https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg',
-          {attribution: 'Map data © <a href="https:// www.geo.admin.ch">Geo Portal des Bundes</a>'})
+          {attribution: 'Map data © <a href="https:// www.geo.admin.ch">geo.admin.ch</a>'})
           .addTo(this.map); // This line is added to add the Tile Layer to our map
 
       // tslint:disable-next-line:one-variable-per-declaration
@@ -112,9 +111,8 @@ export class HomePage {
         this.presentOutsideSwitzerlandAlert();
       }else{
 
-
         const cantonDisplay: CantonDisplay = CantonDisplay[this.abbr];
-        this.title = cantonDisplay.label;
+        this.title = this.txtyouareat + ' ' + cantonDisplay.label;
 
         const mvs: MapViewSettings = this.geoAdminChService.calculateMapViewSettings(this.abbr);
         // center to values given by bbox
@@ -188,6 +186,9 @@ export class HomePage {
     });
     this.translate.get('txtlocating').subscribe((res: string) => {
       this.txtlocating = res;
+    });
+    this.translate.get('txtyouareat').subscribe((res: string) => {
+      this.txtyouareat = res;
     });
   }
 

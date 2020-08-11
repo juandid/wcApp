@@ -1,9 +1,10 @@
 {
   "menu": {
-    "title": "Menu (de)"
+    "title": "Menu"
   },
   "txthint": "Hinweis",
   "txtoutsidech": "Du befindest dich nicht in der Schweiz. Darum kann kein Kanton ermittelt werden.",
   "txtdismiss": "Verstanden",
-  "txtlocating": "Ermittle Position..."
+  "txtlocating": "Ermittle Position...",
+  "txtyouareat": "Du bist im Kanton"
 }
