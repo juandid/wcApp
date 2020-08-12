@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import {Map as GeoMap, tileLayer, marker, icon, CRS, polygon, LatLng, LayerGroup, latLngBounds, latLng} from 'leaflet';
 import { Plugins } from '@capacitor/core';
 
-import {GeoAdminChService} from '../geo-admin-ch.service';
-import {CantonSearchResult} from '../CantonSearchResult';
+import {GeoService} from '../geo.service';
 import {AlertController} from '@ionic/angular';
 import {CantonDisplay} from '../CantonDisplay';
 
@@ -39,7 +38,7 @@ export class HomePage {
   txtyouareat: string;
 
   constructor(
-      private geoAdminChService: GeoAdminChService,
+      private geoAdminChService: GeoService,
       private alertCtrl: AlertController,
       private translate: TranslateService
   ) {
@@ -80,7 +79,7 @@ export class HomePage {
       // ch.swisstopo.pixelkarte-grau
       // ch.swisstopo.pixelkarte-farbe
       tileLayer('https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg',
-          {attribution: 'Map data © <a href="https:// www.geo.admin.ch">geo.admin.ch</a>'})
+          {attribution: 'Map data © <a href="https://www.geo.admin.ch">geo.admin.ch</a>'})
           .addTo(this.map); // This line is added to add the Tile Layer to our map
 
       // tslint:disable-next-line:one-variable-per-declaration
@@ -93,7 +92,7 @@ export class HomePage {
       const bounds = latLngBounds(southWest, northEast);
 
       this.map.setMaxZoom(12);
-      this.map.setMinZoom(5);
+      this.map.setMinZoom(8);
 
       this.map.setMaxBounds(bounds);
 
@@ -108,15 +107,17 @@ export class HomePage {
 
 
     if (this.abbr === undefined){
+        this.map.setView([47.0, 8.3], 8);
         this.presentOutsideSwitzerlandAlert();
-      }else{
+    }else{
 
         const cantonDisplay: CantonDisplay = CantonDisplay[this.abbr];
         this.title = this.txtyouareat + ' ' + cantonDisplay.label;
 
-        const mvs: MapViewSettings = this.geoAdminChService.calculateMapViewSettings(this.abbr);
+        // const mvs: MapViewSettings = this.geoAdminChService.calculateMapViewSettings(this.abbr);
+        // console.log('map setView center' + mvs.centerLng + ',' + mvs.centerLng + ' zoom 10');
         // center to values given by bbox
-        this.map.setView([mvs.centerLat, mvs.centerLng], 10);
+        // this.map.setView([mvs.centerLat, mvs.centerLng], 10);
 
 
         const cantonIcon = icon({
@@ -140,13 +141,6 @@ export class HomePage {
           const exclusions = this.geoAdminChService.getExclusionsFor(this.abbr, cnt);
           if ( this.abbr === 'SG' && cnt === 0){
 
-            // extra handling of containing polygons
-            for ( const exclusion of exclusions){
-              // AR polygon with all AI polygons
-              // console.log(exclusion.cantInd + ':' + exclusion.ringInd);
-              //
-            }
-
             // union of ar 0 and all ai exclusions
             polygons[1].push(this.geoAdminChService.getUnionedPolygonsOfArAndAi());
             // exclusion of tg 1
@@ -166,8 +160,7 @@ export class HomePage {
 
         // finally add all objects to the map
         this.map.addLayer(this.layerGroup);
-
-
+        // console.log('fit bounds ' + this.geoAdminChService.getBounds(this.abbr));
         this.map.fitBounds(this.geoAdminChService.getBounds(this.abbr));
       }
 
