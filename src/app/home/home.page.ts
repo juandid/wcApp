@@ -5,7 +5,6 @@ import { Plugins } from '@capacitor/core';
 import {GeoService} from '../geo.service';
 import {AlertController} from '@ionic/angular';
 import {CantonDisplay} from '../CantonDisplay';
-
 const { Geolocation } = Plugins;
 
 import { TranslateService } from '@ngx-translate/core';
@@ -32,20 +31,21 @@ export class HomePage {
 
   // Hint Outside CH
   txthint: string;
+  txterror: string;
   txtoutsidech: string;
+  txtlocatingerror: string;
   txtdismiss: string;
   txtlocating: string;
   txtyouareat: string;
 
   constructor(
-      private geoAdminChService: GeoService,
       private alertCtrl: AlertController,
-      private translate: TranslateService
+      private translate: TranslateService,
+      private geoAdminChService: GeoService
   ) {
     // empty constructor
     this.title = this.txtlocating;
     this.layerGroup = new LayerGroup<any>();
-
   }
 
   // The below function is added
@@ -57,7 +57,7 @@ export class HomePage {
   // The below function is added
   showCurrentCanton(){
 
-    Geolocation.getCurrentPosition({ maximumAge: 5000, timeout: 10000, enableHighAccuracy: false }).then((resp) => {
+    Geolocation.getCurrentPosition({ timeout: 5000, enableHighAccuracy: false }).then((resp) => {
 
       this.latitude = resp.coords.latitude;
       this.longitude = resp.coords.longitude;
@@ -66,45 +66,25 @@ export class HomePage {
       this.showCanton();
 
     }).catch((error) => {
-      alert('Error getting location' + JSON.stringify(error));
+      this.alertCtrl.create({
+        animated: true,
+        header: this.txterror,
+        message: this.txtlocatingerror,
+        buttons: [this.txtdismiss]
+      }).then(alertEl => alertEl.present());
+      this.showNoCanton();
     });
 
   }
 
+  showNoCanton() {
+    this.setupMap();
+    this.map.setView([47.0, 8.3], 8);
+  }
+
   showCanton() {
-
-    if ( this.map === undefined ) {
-
-      this.map = new GeoMap('map', {crs: CRS.EPSG3857, worldCopyJump: false});
-      // ch.swisstopo.pixelkarte-grau
-      // ch.swisstopo.pixelkarte-farbe
-      tileLayer('https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg',
-          {attribution: 'Map data © <a href="https://www.geo.admin.ch">geo.admin.ch</a>'})
-          .addTo(this.map); // This line is added to add the Tile Layer to our map
-
-      // tslint:disable-next-line:one-variable-per-declaration
-      const southWest = latLng(45.16, 5.3), // Grenoble
-          northEast = latLng(48.18, 10.9); // München
-
-      // southWest = latLng(46.204391, 6.143158); // Genf
-      // northEast = latLng(47.503040, 47.747); // Bregenz
-
-      const bounds = latLngBounds(southWest, northEast);
-
-      this.map.setMaxZoom(12);
-      this.map.setMinZoom(8);
-
-      this.map.setMaxBounds(bounds);
-
-    }
-
-    // remove old stuff
-    this.map.removeLayer(this.layerGroup);
-    // initialize
-    this.layerGroup = new LayerGroup<any>();
-
+    this.setupMap();
     this.abbr = this.geoAdminChService.findCanton(this.longitude, this.latitude);
-
 
     if (this.abbr === undefined){
         this.map.setView([47.0, 8.3], 8);
@@ -147,7 +127,10 @@ export class HomePage {
             polygons[1].push(this.geoAdminChService.getAndSwapPolygonCoordinates(this.geoAdminChService.getCantInd('TG'), 1));
 
           } else {
-            for ( const exclusion of exclusions){
+            const type = typeof exclusions;
+            // tslint:disable-next-line:prefer-for-of
+            for ( let i = 0; i < exclusions.length; i++ ) {
+              const exclusion = exclusions[i];
               polygons[1].push(this.geoAdminChService.getAndSwapPolygonCoordinates(exclusion.cantInd, exclusion.ringInd));
             }
           }
@@ -166,13 +149,51 @@ export class HomePage {
 
   }
 
+  setupMap() {
+    if ( this.map === undefined ) {
+
+      this.map = new GeoMap('map', {crs: CRS.EPSG3857, worldCopyJump: false});
+      // ch.swisstopo.pixelkarte-grau
+      // ch.swisstopo.pixelkarte-farbe
+      const tileUrlOnline = 'https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg';
+      const tileUrlOffline = '/assets/tiles/{z}/{x}/{y}.jpeg';
+      tileLayer(tileUrlOffline, {attribution: 'Map data © <a href="https://www.geo.admin.ch">geo.admin.ch</a>'})
+          .addTo(this.map); // This line is added to add the Tile Layer to our map
+
+      // tslint:disable-next-line:one-variable-per-declaration
+      const southWest = latLng(45.16, 5.3), // Grenoble
+          northEast = latLng(48.18, 10.9); // München
+
+      // southWest = latLng(46.204391, 6.143158); // Genf
+      // northEast = latLng(47.503040, 47.747); // Bregenz
+
+      const bounds = latLngBounds(southWest, northEast);
+
+      this.map.setMaxZoom(11);
+      this.map.setMinZoom(8);
+
+      this.map.setMaxBounds(bounds);
+
+    }
+
+    // remove old stuff
+    this.map.removeLayer(this.layerGroup);
+    // initialize
+    this.layerGroup = new LayerGroup<any>();
+  }
 
   _initialiseTranslation(): void {
     this.translate.get('txthint').subscribe((res: string) => {
       this.txthint = res;
     });
+    this.translate.get('txterror').subscribe((res: string) => {
+      this.txterror = res;
+    });
     this.translate.get('txtoutsidech').subscribe((res: string) => {
       this.txtoutsidech = res;
+    });
+    this.translate.get('txtlocatingerror').subscribe((res: string) => {
+      this.txtlocatingerror = res;
     });
     this.translate.get('txtdismiss').subscribe((res: string) => {
       this.txtdismiss = res;

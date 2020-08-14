@@ -32,3 +32,6 @@ out-tsc
 /platforms
 /plugins
 /www
+
+/src/assets/tiles
+/out/*

@@ -3,7 +3,9 @@
     "title": "Menu"
   },
   "txthint": "Remarque",
+  "txterror": "Erreur",
   "txtoutsidech": "Vous n'êtes pas en Suisse. Aucun canton ne peut donc être déterminé.",
+  "txtlocatingerror": "Il y a un problème avec l'emplacement.",
   "txtdismiss": "D'accord",
   "txtlocating": "Trouver la position...",
   "txtyouareat": "Vous êtes dans le canton de"

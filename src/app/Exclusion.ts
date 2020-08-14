@@ -1,4 +1,4 @@
-export interface Exclusion
+export class Exclusion
 {
     cantInd: number;
     ringInd: number;

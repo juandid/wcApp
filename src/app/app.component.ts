@@ -62,10 +62,10 @@ export class AppComponent {
 
   getDeviceLanguage() {
     if (window.Intl && typeof window.Intl === 'object') {
-      console.log('navigator.language = ' + navigator.language);
+      // console.log('navigator.language = ' + navigator.language);
       this._initTranslate(navigator.language);
     }else{
-      console.log('failed to retrieve language. using fallback en');
+      // console.log('failed to retrieve language. using fallback en');
       this._initTranslate('en');
     }
   }

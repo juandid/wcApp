@@ -32,7 +32,7 @@ export class GeoService {
             cnt++;
         }
 
-        /*
+/*
         const start = new Date().getTime();
         this.cantonArr.forEach((canton1: CantonData) => {
             let cnt1 = 0;
@@ -77,12 +77,11 @@ export class GeoService {
             line = line + ']);';
             console.log(line);
         });
+*/
 
-         */
     }
 
     getExclusionsFor(abbr: string, cnt: number): Exclusion[] {
-
         const exclusionArr: Exclusion[] = CantonExclusions[abbr];
         if (cnt === 0 && exclusionArr !== undefined){
             return exclusionArr;
@@ -183,7 +182,7 @@ export class GeoService {
         // calculate the extent of the cantons width -> calc the zoom
         const extentLng = bBoxArr[2] - bBoxArr[0];
         const zoom = Math.round(10.4 - (extentLng * 1.5 ));
-        console.log(abbr + ' extentLng=' + extentLng + ' -> zoom=' + zoom);
+        // console.log(abbr + ' extentLng=' + extentLng + ' -> zoom=' + zoom);
 
         return {centerLat, centerLng, zoom};
     }
