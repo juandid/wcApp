@@ -182,7 +182,7 @@ export class GeoService {
         // calculate the extent of the cantons width -> calc the zoom
         const extentLng = bBoxArr[2] - bBoxArr[0];
         let zoom = Math.round(10.4 - (extentLng * 1.8 ));
-        console.log(abbr + ' extentLng=' + extentLng + ' -> zoom=' + zoom);
+        // console.log(abbr + ' extentLng=' + extentLng + ' -> zoom=' + zoom);
 
         if (zoom < 8){
             zoom = 8;
@@ -190,7 +190,7 @@ export class GeoService {
         if (zoom > 9){
             zoom = 9;
         }
-        console.log(abbr + ' -> final zoom=' + zoom);
+        // console.log(abbr + ' -> final zoom=' + zoom);
         return {centerLat, centerLng, zoom};
     }
 
