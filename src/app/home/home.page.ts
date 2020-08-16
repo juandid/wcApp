@@ -94,18 +94,29 @@ export class HomePage {
         const cantonDisplay: CantonDisplay = CantonDisplay[this.abbr];
         this.title = this.txtyouareat + ' ' + cantonDisplay.label;
 
-        // const mvs: MapViewSettings = this.geoAdminChService.calculateMapViewSettings(this.abbr);
-        // console.log('map setView center' + mvs.centerLng + ',' + mvs.centerLng + ' zoom 10');
-        // center to values given by bbox
-        // this.map.setView([mvs.centerLat, mvs.centerLng], 10);
+        const baseIcon = icon({
+        iconUrl: '/assets/icon/base-marker.png',
+        iconSize:     [20, 29], // size of the icon
+        iconAnchor:   [10, 25], // point of the icon which will correspond to marker's location
+      });
+        marker([this.latitude, this.longitude], {icon: baseIcon}).addTo(this.layerGroup);
 
+
+        /*const dotIcon = icon({
+        iconUrl: '/assets/icon/dot-marker.png',
+        iconSize:     [20, 20], // size of the icon
+      });
+        marker([this.latitude, this.longitude], {icon: dotIcon}).addTo(this.layerGroup);
+*/
 
         const cantonIcon = icon({
           iconUrl: '/assets/icon/' + this.abbr + '.png',
           iconSize:     [20, 25], // size of the icon
-          iconAnchor:   [10, 25], // point of the icon which will correspond to marker's location
+          iconAnchor:   [10, 45], // point of the icon which will correspond to marker's location
         });
         marker([this.latitude, this.longitude], {icon: cantonIcon}).addTo(this.layerGroup);
+
+
 
         let cnt = 0;
         for ( const polygonArray of this.geoAdminChService.getRingsFor(this.abbr)) {
@@ -143,8 +154,14 @@ export class HomePage {
 
         // finally add all objects to the map
         this.map.addLayer(this.layerGroup);
-        // console.log('fit bounds ' + this.geoAdminChService.getBounds(this.abbr));
-        this.map.fitBounds(this.geoAdminChService.getBounds(this.abbr));
+
+        // this.map.fitBounds(this.geoAdminChService.getBounds(this.abbr));
+
+
+        const mvs: MapViewSettings = this.geoAdminChService.calculateMapViewSettings(this.abbr);
+        // console.log('map setView center' + mvs.centerLng + ',' + mvs.centerLng + ' zoom 10');
+        // center to values given by bbox
+        this.map.setView([mvs.centerLat, mvs.centerLng], mvs.zoom);
       }
 
   }

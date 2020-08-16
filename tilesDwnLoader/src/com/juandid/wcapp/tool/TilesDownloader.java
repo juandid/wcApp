@@ -20,7 +20,7 @@ public class TilesDownloader {
 
         tileRanges.add(new TileRange(8, 130, 137, 88, 92));
         tileRanges.add(new TileRange(9, 262, 272, 177, 183));
-        tileRanges.add(new TileRange(10, 527, 529, 355, 364));
+        tileRanges.add(new TileRange(10, 527, 537, 355, 364));
         tileRanges.add(new TileRange(11, 1052, 1087, 712, 728));
         //tileRanges.add(new TileRange(12, 2113, 2157, 1429, 1451));
 
