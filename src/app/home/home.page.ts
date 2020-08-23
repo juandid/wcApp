@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {Map as GeoMap, tileLayer, marker, icon, CRS, polygon, LatLng, LayerGroup, latLngBounds, latLng} from 'leaflet';
+import {Map as GeoMap, tileLayer, marker, icon, CRS, polygon, LatLng, LayerGroup, latLngBounds, latLng, LeafletEvent} from 'leaflet';
 import { Plugins } from '@capacitor/core';
 
 import {GeoService} from '../geo.service';
@@ -21,6 +21,7 @@ export class HomePage {
   // map presentation
   map: GeoMap;
   layerGroup: LayerGroup;
+  mvs: MapViewSettings;
   // geolocation
   latitude: number;
   longitude: number;
@@ -57,7 +58,7 @@ export class HomePage {
   // The below function is added
   showCurrentCanton(){
 
-    Geolocation.getCurrentPosition({ timeout: 5000, enableHighAccuracy: false }).then((resp) => {
+    Geolocation.getCurrentPosition({ timeout: 5000, enableHighAccuracy: true }).then((resp) => {
 
       this.latitude = resp.coords.latitude;
       this.longitude = resp.coords.longitude;
@@ -101,22 +102,12 @@ export class HomePage {
       });
         marker([this.latitude, this.longitude], {icon: baseIcon}).addTo(this.layerGroup);
 
-
-        /*const dotIcon = icon({
-        iconUrl: '/assets/icon/dot-marker.png',
-        iconSize:     [20, 20], // size of the icon
-      });
-        marker([this.latitude, this.longitude], {icon: dotIcon}).addTo(this.layerGroup);
-*/
-
         const cantonIcon = icon({
           iconUrl: '/assets/icon/' + this.abbr + '.png',
           iconSize:     [20, 25], // size of the icon
           iconAnchor:   [10, 45], // point of the icon which will correspond to marker's location
         });
-        marker([this.latitude, this.longitude], {icon: cantonIcon}).addTo(this.layerGroup);
-
-
+        marker([this.latitude, this.longitude], {icon: cantonIcon}).addTo(this.layerGroup).bindPopup(`Latitude: ${this.latitude}<br>Longitude: ${this.longitude}<br>Accuracy: ${this.accuracy}`).openPopup();
 
         let cnt = 0;
         for ( const polygonArray of this.geoAdminChService.getRingsFor(this.abbr)) {
@@ -158,10 +149,22 @@ export class HomePage {
         // this.map.fitBounds(this.geoAdminChService.getBounds(this.abbr));
 
 
-        const mvs: MapViewSettings = this.geoAdminChService.calculateMapViewSettings(this.abbr);
+        this.mvs = this.geoAdminChService.calculateMapViewSettings(this.abbr);
         // console.log('map setView center' + mvs.centerLng + ',' + mvs.centerLng + ' zoom 10');
         // center to values given by bbox
-        this.map.setView([mvs.centerLat, mvs.centerLng], mvs.zoom);
+        this.map.setView([this.mvs.centerLat, this.mvs.centerLng], this.mvs.zoom);
+
+        this.map.on('zoom', (event: LeafletEvent) => {
+                // console.log(this.map.getZoom());
+                if (this.map.getZoom() > this.mvs.zoom){
+                  this.map.panTo([this.latitude, this.longitude]);
+                }else{
+                  this.map.panTo([this.mvs.centerLat, this.mvs.centerLng]);
+                }
+
+            }
+        );
+
       }
 
   }

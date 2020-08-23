@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { Device } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -38,36 +38,15 @@ export class AppComponent {
       this.splashScreen.hide();
     });
 
-    this.getDeviceLanguage();
+    // default de
+    this.language = 'de';
+    this.translate.setDefaultLang('de');
+    Device.getLanguageCode().then(result => {
+      // console.log('Device.getLanguageCode() = ' + result.value);
+      this.language = result.value;
+      this.translate.use(this.language);
+    });
 
-  }
-
-  _translateLanguage(): void {
-    this.translate.use(this.language);
-  }
-
-
-  _initTranslate(language) {
-    // Set the default language for translation strings, and the current language.
-    this.translate.setDefaultLang('en');
-    if (language) {
-      this.language = language;
-    }
-    else {
-      // Set your language here
-      this.language = 'en';
-    }
-    this._translateLanguage();
-  }
-
-  getDeviceLanguage() {
-    if (window.Intl && typeof window.Intl === 'object') {
-      // console.log('navigator.language = ' + navigator.language);
-      this._initTranslate(navigator.language);
-    }else{
-      // console.log('failed to retrieve language. using fallback en');
-      this._initTranslate('en');
-    }
   }
 
 }
