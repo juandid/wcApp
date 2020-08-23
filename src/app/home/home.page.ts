@@ -58,7 +58,7 @@ export class HomePage {
   // The below function is added
   showCurrentCanton(){
 
-    Geolocation.getCurrentPosition({ timeout: 5000, enableHighAccuracy: true }).then((resp) => {
+    Geolocation.getCurrentPosition({ timeout: 5000, enableHighAccuracy: false }).then((resp) => {
 
       this.latitude = resp.coords.latitude;
       this.longitude = resp.coords.longitude;
@@ -154,16 +154,16 @@ export class HomePage {
         // center to values given by bbox
         this.map.setView([this.mvs.centerLat, this.mvs.centerLng], this.mvs.zoom);
 
-        this.map.on('zoom', (event: LeafletEvent) => {
-                // console.log(this.map.getZoom());
-                if (this.map.getZoom() > this.mvs.zoom){
-                  this.map.panTo([this.latitude, this.longitude]);
-                }else{
-                  this.map.panTo([this.mvs.centerLat, this.mvs.centerLng]);
-                }
-
-            }
-        );
+        // this.map.on('zoom', (event: LeafletEvent) => {
+        //         // console.log(this.map.getZoom());
+        //         if (this.map.getZoom() > this.mvs.zoom){
+        //           this.map.panTo([this.latitude, this.longitude]);
+        //         }else{
+        //           this.map.panTo([this.mvs.centerLat, this.mvs.centerLng]);
+        //         }
+        //
+        //     }
+        // );
 
       }
 
