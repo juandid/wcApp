@@ -107,7 +107,8 @@ export class HomePage {
           iconSize:     [20, 25], // size of the icon
           iconAnchor:   [10, 45], // point of the icon which will correspond to marker's location
         });
-        marker([this.latitude, this.longitude], {icon: cantonIcon}).addTo(this.layerGroup).bindPopup(`Latitude: ${this.latitude}<br>Longitude: ${this.longitude}<br>Accuracy: ${this.accuracy}`).openPopup();
+        marker([this.latitude, this.longitude], {icon: cantonIcon}).addTo(this.layerGroup);
+        // .bindPopup(`Latitude: ${this.latitude}<br>Longitude: ${this.longitude}<br>Accuracy: ${this.accuracy}`).openPopup();
 
         let cnt = 0;
         for ( const polygonArray of this.geoAdminChService.getRingsFor(this.abbr)) {
@@ -173,19 +174,14 @@ export class HomePage {
     if ( this.map === undefined ) {
 
       this.map = new GeoMap('map', {crs: CRS.EPSG3857, worldCopyJump: false});
-      // ch.swisstopo.pixelkarte-grau
-      // ch.swisstopo.pixelkarte-farbe
-      const tileUrlOnline = 'https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg';
+      // const tileUrlOnline = 'https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg';
       const tileUrlOffline = '/assets/tiles/{z}/{x}/{y}.jpeg';
-      tileLayer(tileUrlOffline, {attribution: 'Map data © <a href="https://www.geo.admin.ch">geo.admin.ch</a>'})
+      tileLayer(tileUrlOffline, {attribution: 'Map data © <a href="https://geo.admin.ch">geo.admin.ch</a>'})
           .addTo(this.map); // This line is added to add the Tile Layer to our map
 
       // tslint:disable-next-line:one-variable-per-declaration
       const southWest = latLng(45.16, 5.3), // Grenoble
           northEast = latLng(48.18, 10.9); // München
-
-      // southWest = latLng(46.204391, 6.143158); // Genf
-      // northEast = latLng(47.503040, 47.747); // Bregenz
 
       const bounds = latLngBounds(southWest, northEast);
 
