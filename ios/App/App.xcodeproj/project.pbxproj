@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		214174EE24F81CC20084C1F6 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 214174ED24F81CC20084C1F6 /* MapKit.framework */; };
 		21B5BE5824EB049B007A5E97 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21B5BE5624EB049B007A5E97 /* LaunchScreen.storyboard */; };
 		21B5BE5924EB049B007A5E97 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21B5BE5724EB049B007A5E97 /* Main.storyboard */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
@@ -19,6 +20,7 @@
 
 /* Begin PBXFileReference section */
 		213A64AA24E81D8E001127C7 /* Directions.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = Directions.geojson; sourceTree = "<group>"; };
+		214174ED24F81CC20084C1F6 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		216929CC24E3094C000A6286 /* Kanton?.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Kanton?.entitlements"; sourceTree = "<group>"; };
 		21B5BE5624EB049B007A5E97 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		21B5BE5724EB049B007A5E97 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -39,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				214174EE24F81CC20084C1F6 /* MapKit.framework in Frameworks */,
 				A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -49,6 +52,7 @@
 		27E2DDA53C4D2A4D1A88CE4A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				214174ED24F81CC20084C1F6 /* MapKit.framework */,
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
 			);
 			name = Frameworks;
@@ -332,11 +336,12 @@
 				CODE_SIGN_ENTITLEMENTS = "App/Kanton?.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 994T48734A;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.juandid.wcapp;
 				PRODUCT_NAME = "Kanton?";
@@ -355,11 +360,12 @@
 				CODE_SIGN_ENTITLEMENTS = "App/Kanton?.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 994T48734A;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.juandid.wcapp;
 				PRODUCT_NAME = "Kanton?";
 				PROVISIONING_PROFILE_SPECIFIER = "";
