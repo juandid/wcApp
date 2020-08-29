@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/Users/aj/keystores/upload-keystore.jks')
+            storePassword 'oD2yNnu0kbB82FqC'
+            keyPassword 'oD2yNnu0kbB82FqC'
+            keyAlias 'upload'
+        }
+    }
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.juandid.wc.app"
