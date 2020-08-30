@@ -40,8 +40,8 @@ public class TilesDownloader {
             for (int row = tileRange.rowLower; row <= tileRange.rowUpper; row++) {
                 for (int col = tileRange.colLower; col <= tileRange.colUpper; col++) {
                     String sourceUrlStr = String.format("https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/%d/%d/%d.jpeg", tileRange.zoom, row, col);
-                    String folderStr = String.format("~/ws/wcApp/src/assets/tiles/%d/%d", tileRange.zoom, row);
-                    String targetFileStr = String.format("~/ws/wcApp/src/assets/tiles/%d/%d/%d.jpeg", tileRange.zoom, row, col);
+                    String folderStr = String.format("src/assets/tiles/%d/%d", tileRange.zoom, row);
+                    String targetFileStr = String.format("src/assets/tiles/%d/%d/%d.jpeg", tileRange.zoom, row, col);
                     try{
                         File folderFile = new File(folderStr);
                         if (isFolderExists(folderFile)){

@@ -23,20 +23,20 @@ public class OSMTilesDownloader {
 
         //<TileSetId>/<TileRow>/<TileCol>
         List<TileRange> tileRanges = new ArrayList<>();
-
+        tileRanges.add(new TileRange(7, 65, 68, 43, 46));
         tileRanges.add(new TileRange(8, 130, 137, 87, 92));
-        /* tileRanges.add(new TileRange(9, 264, 270, 176, 183));
-        tileRanges.add(new TileRange(10, 530, 540, 355, 365));
+        tileRanges.add(new TileRange(9, 263, 271, 176, 183));
+        tileRanges.add(new TileRange(10, 530, 542, 355, 365));
         tileRanges.add(new TileRange(11, 1052, 1087, 711, 731));
-        tileRanges.add(new TileRange(12, 2116, 2168, 1426, 1461));
-*/
+        // tileRanges.add(new TileRange(12, 2116, 2168, 1426, 1461));
+
         for (int i = 0; i < tileRanges.size(); i++) {
             TileRange tileRange = tileRanges.get(i);
             for (int row = tileRange.rowLower; row <= tileRange.rowUpper; row++) {
                 for (int col = tileRange.colLower; col <= tileRange.colUpper; col++) {
                     String sourceUrlStr = String.format("https://tile.openstreetmap.org/%d/%d/%d.png", tileRange.zoom, row, col);
-                    String folderStr = String.format("~/ws/wcApp/src/assets/osmtiles/%d/%d", tileRange.zoom, row);
-                    String targetFileStr = String.format("~/ws/wcApp/src/assets/osmtiles/%d/%d/%d.png", tileRange.zoom, row, col);
+                    String folderStr = String.format("src/assets/osmtiles/%d/%d", tileRange.zoom, row);
+                    String targetFileStr = String.format("src/assets/osmtiles/%d/%d/%d.png", tileRange.zoom, row, col);
                     try{
                         File folderFile = new File(folderStr);
                         if (isFolderExists(folderFile)){
