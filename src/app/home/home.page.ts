@@ -42,7 +42,7 @@ export class HomePage {
   constructor(
       private alertCtrl: AlertController,
       private translate: TranslateService,
-      private geoAdminChService: GeoService
+      private geoService: GeoService
   ) {
     // empty constructor
     this.title = this.txtlocating;
@@ -85,7 +85,7 @@ export class HomePage {
 
   showCanton() {
     this.setupMap();
-    this.abbr = this.geoAdminChService.findCanton(this.longitude, this.latitude);
+    this.abbr = this.geoService.findCanton(this.longitude, this.latitude);
 
     if (this.abbr === undefined){
         this.map.setView([47.0, 8.3], 8);
@@ -111,7 +111,7 @@ export class HomePage {
         // .bindPopup(`Latitude: ${this.latitude}<br>Longitude: ${this.longitude}<br>Accuracy: ${this.accuracy}`).openPopup();
 
         let cnt = 0;
-        for ( const polygonArray of this.geoAdminChService.getRingsFor(this.abbr)) {
+        for ( const polygonArray of this.geoService.getRingsFor(this.abbr)) {
 
           const polyArr: LatLng[] = [];
           // swap x and y
@@ -121,20 +121,20 @@ export class HomePage {
 
           const polygons: LatLng[][][] = [[ polyArr], []];
 
-          const exclusions = this.geoAdminChService.getExclusionsFor(this.abbr, cnt);
+          const exclusions = this.geoService.getExclusionsFor(this.abbr, cnt);
           if ( this.abbr === 'SG' && cnt === 0){
 
             // union of ar 0 and all ai exclusions
-            polygons[1].push(this.geoAdminChService.getUnionedPolygonsOfArAndAi());
+            polygons[1].push(this.geoService.getUnionedPolygonsOfArAndAi());
             // exclusion of tg 1
-            polygons[1].push(this.geoAdminChService.getAndSwapPolygonCoordinates(this.geoAdminChService.getCantInd('TG'), 1));
+            polygons[1].push(this.geoService.getAndSwapPolygonCoordinates(this.geoService.getCantInd('TG'), 1));
 
           } else {
             const type = typeof exclusions;
             // tslint:disable-next-line:prefer-for-of
             for ( let i = 0; i < exclusions.length; i++ ) {
               const exclusion = exclusions[i];
-              polygons[1].push(this.geoAdminChService.getAndSwapPolygonCoordinates(exclusion.cantInd, exclusion.ringInd));
+              polygons[1].push(this.geoService.getAndSwapPolygonCoordinates(exclusion.cantInd, exclusion.ringInd));
             }
           }
 
@@ -150,7 +150,7 @@ export class HomePage {
         // this.map.fitBounds(this.geoAdminChService.getBounds(this.abbr));
 
 
-        this.mvs = this.geoAdminChService.calculateMapViewSettings(this.abbr);
+        this.mvs = this.geoService.calculateMapViewSettings(this.abbr);
         // console.log('map setView center' + mvs.centerLng + ',' + mvs.centerLng + ' zoom 10');
         // center to values given by bbox
         this.map.setView([this.mvs.centerLat, this.mvs.centerLng], this.mvs.zoom);
@@ -174,7 +174,7 @@ export class HomePage {
     if ( this.map === undefined ) {
 
       this.map = new GeoMap('map', {crs: CRS.EPSG3857, worldCopyJump: false});
-      if (true) {
+      if (false) {
         const tileUrlOnline = 'https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg';
         const tileUrlOffline = '/assets/tiles/{z}/{x}/{y}.jpeg';
         tileLayer(tileUrlOffline, {
@@ -182,7 +182,9 @@ export class HomePage {
         }).addTo(this.map); // This line is added to add the Tile Layer to our map
       }else{
         // open street map
-        tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const tileUrlOnline = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+        const tileUrlOffline = '/assets/osmtiles/{z}/{x}/{y}.png';
+        tileLayer(tileUrlOffline, {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.map);
       }
