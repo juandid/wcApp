@@ -174,10 +174,20 @@ export class HomePage {
     if ( this.map === undefined ) {
 
       this.map = new GeoMap('map', {crs: CRS.EPSG3857, worldCopyJump: false});
-      // const tileUrlOnline = 'https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg';
-      const tileUrlOffline = '/assets/tiles/{z}/{x}/{y}.jpeg';
-      tileLayer(tileUrlOffline, {attribution: 'Map data © <a href="https://geo.admin.ch">geo.admin.ch</a>'})
-          .addTo(this.map); // This line is added to add the Tile Layer to our map
+      if (true) {
+        const tileUrlOnline = 'https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg';
+        const tileUrlOffline = '/assets/tiles/{z}/{x}/{y}.jpeg';
+        tileLayer(tileUrlOffline, {
+          attribution: 'Map data © <a href="https://geo.admin.ch">geo.admin.ch</a>'
+        }).addTo(this.map); // This line is added to add the Tile Layer to our map
+      }else{
+        // open street map
+        tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(this.map);
+      }
+
+
 
       // tslint:disable-next-line:one-variable-per-declaration
       const southWest = latLng(45.16, 5.3), // Grenoble
@@ -185,8 +195,9 @@ export class HomePage {
 
       const bounds = latLngBounds(southWest, northEast);
 
-      this.map.setMaxZoom(11);
+
       this.map.setMinZoom(8);
+      this.map.setMaxZoom(12);
 
       this.map.setMaxBounds(bounds);
 

@@ -1,9 +1,21 @@
 package com.juandid.wcapp.tool;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -17,20 +29,19 @@ public class TilesDownloader {
         //<TileSetId>/<TileRow>/<TileCol>
         List<TileRange> tileRanges = new ArrayList<>();
 
-
         tileRanges.add(new TileRange(8, 130, 137, 88, 92));
         tileRanges.add(new TileRange(9, 262, 272, 176, 183));
-        tileRanges.add(new TileRange(10, 527, 539, 355, 364));
-        tileRanges.add(new TileRange(11, 1052, 1087, 712, 728));
-        //tileRanges.add(new TileRange(12, 2113, 2157, 1429, 1451));
+        tileRanges.add(new TileRange(10, 527, 542, 355, 365));
+        tileRanges.add(new TileRange(11, 1052, 1087, 711, 731));
+        tileRanges.add(new TileRange(12, 2116, 2168, 1426, 1461));
 
         for (int i = 0; i < tileRanges.size(); i++) {
             TileRange tileRange = tileRanges.get(i);
             for (int row = tileRange.rowLower; row <= tileRange.rowUpper; row++) {
                 for (int col = tileRange.colLower; col <= tileRange.colUpper; col++) {
-                    String currentUrlStr = String.format("https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/%d/%d/%d.jpeg", tileRange.zoom, row, col);
+                    String sourceUrlStr = String.format("https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/%d/%d/%d.jpeg", tileRange.zoom, row, col);
                     String folderStr = String.format("/Users/aj/ws/wcApp/src/assets/tiles/%d/%d", tileRange.zoom, row);
-                    String fileStr = String.format("/Users/aj/ws/wcApp/src/assets/tiles/%d/%d/%d.jpeg", tileRange.zoom, row, col);
+                    String targetFileStr = String.format("/Users/aj/ws/wcApp/src/assets/tiles/%d/%d/%d.jpeg", tileRange.zoom, row, col);
                     try{
                         File folderFile = new File(folderStr);
                         if (isFolderExists(folderFile)){
@@ -42,14 +53,13 @@ public class TilesDownloader {
                         System.err.println("failed to create folder " + e.getMessage());
                     }
                     try {
-                        File imgFile = new File(fileStr);
+                        File imgFile = new File(targetFileStr);
                         if (isFileExists(imgFile)){
                             // do nothing
-                            System.out.println("skip " + fileStr);
+                            System.out.println("skip " + targetFileStr);
                         }else{
-                            InputStream in = new URL(currentUrlStr).openStream();
-                            Files.copy(in, Paths.get(fileStr));
-                            System.out.println("done " + fileStr);
+                            int code = downloadImage(sourceUrlStr, targetFileStr);
+                            System.out.println("done " + targetFileStr + " with status code " + code);
                         }
                     } catch (Exception e) {
                         System.err.println("failed to download picture " + e.getMessage());
@@ -69,4 +79,46 @@ public class TilesDownloader {
     public static boolean isFolderExists(File file) {
         return file.exists() && file.isDirectory();
     }
+
+
+    private static int downloadImage(String sourceUrlStr, String targetFileStr) {
+        int code = 0;
+        try {
+            CloseableHttpClient client = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet(sourceUrlStr);
+            request.addHeader("Accept", "image/webp,image/apng,image/*,*/*;q=0.8");
+            request.addHeader("Referer", "http://localhost:4200/home");
+            request.addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1");
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            code = response.getStatusLine().getStatusCode();
+
+            // System.out.println("Request Url: " + request.getURI());
+            // System.out.println("Response Code: " + responseCode);
+
+            InputStream is = entity.getContent();
+
+            FileOutputStream fos = new FileOutputStream(new File(targetFileStr));
+
+            int inByte;
+            while ((inByte = is.read()) != -1) {
+                fos.write(inByte);
+            }
+
+            is.close();
+            fos.close();
+
+            client.close();
+            // System.out.println("File Download Completed!!!");
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (UnsupportedOperationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return code;
+    }
+
 }
