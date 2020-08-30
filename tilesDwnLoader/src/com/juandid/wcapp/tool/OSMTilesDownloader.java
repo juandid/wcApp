@@ -25,9 +25,9 @@ public class OSMTilesDownloader {
         List<TileRange> tileRanges = new ArrayList<>();
 
         tileRanges.add(new TileRange(8, 130, 137, 87, 92));
-        tileRanges.add(new TileRange(9, 264, 270, 176, 183));
+        /* tileRanges.add(new TileRange(9, 264, 270, 176, 183));
         tileRanges.add(new TileRange(10, 530, 540, 355, 365));
-        /* tileRanges.add(new TileRange(11, 1052, 1087, 711, 731));
+        tileRanges.add(new TileRange(11, 1052, 1087, 711, 731));
         tileRanges.add(new TileRange(12, 2116, 2168, 1426, 1461));
 */
         for (int i = 0; i < tileRanges.size(); i++) {
