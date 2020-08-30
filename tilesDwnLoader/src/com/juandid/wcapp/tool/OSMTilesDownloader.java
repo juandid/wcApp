@@ -35,8 +35,8 @@ public class OSMTilesDownloader {
             for (int row = tileRange.rowLower; row <= tileRange.rowUpper; row++) {
                 for (int col = tileRange.colLower; col <= tileRange.colUpper; col++) {
                     String sourceUrlStr = String.format("https://tile.openstreetmap.org/%d/%d/%d.png", tileRange.zoom, row, col);
-                    String folderStr = String.format("/Users/aj/ws/wcApp/src/assets/osmtiles/%d/%d", tileRange.zoom, row);
-                    String targetFileStr = String.format("/Users/aj/ws/wcApp/src/assets/osmtiles/%d/%d/%d.png", tileRange.zoom, row, col);
+                    String folderStr = String.format("~/ws/wcApp/src/assets/osmtiles/%d/%d", tileRange.zoom, row);
+                    String targetFileStr = String.format("~/ws/wcApp/src/assets/osmtiles/%d/%d/%d.png", tileRange.zoom, row, col);
                     try{
                         File folderFile = new File(folderStr);
                         if (isFolderExists(folderFile)){
