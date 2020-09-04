@@ -35,7 +35,7 @@
     "@types/turf": "^3.5.32",
     "cordova-plugin-geolocation": "^4.0.2",
     "cordova-plugin-globalization": "^1.11.0",
-    "leaflet": "^1.6.0",
+    "leaflet": "^1.7.1",
     "rxjs": "~6.5.1",
     "tslib": "^1.10.0",
     "typescript-require": "^0.3.0",

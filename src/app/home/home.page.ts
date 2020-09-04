@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {CRS, icon, LatLng, latLng, latLngBounds, LayerGroup, marker, polygon} from 'leaflet';
-import {Plugins} from '@capacitor/core';
+import {CallbackID, Plugins} from '@capacitor/core';
 
 import {GeoService} from '../geo.service';
 import {AlertController} from '@ionic/angular';
@@ -8,8 +8,6 @@ import {CantonDisplay} from '../CantonDisplay';
 import {TranslateService} from '@ngx-translate/core';
 import {MapViewSettings} from '../MapViewSettings';
 import * as L from 'leaflet';
-
-
 const {Geolocation} = Plugins;
 
 
@@ -24,10 +22,12 @@ export class HomePage {
     map: L.Map;
     layerGroup: LayerGroup;
     mvs: MapViewSettings;
+    doCenter: boolean;
     // geolocation
     latitude: number;
     longitude: number;
     accuracy: number;
+    watchId: CallbackID;
     // canton selected
     title: string;
     abbr: string;
@@ -46,7 +46,7 @@ export class HomePage {
         private translate: TranslateService,
         private geoService: GeoService
     ) {
-        // empty constructor
+        this.doCenter = true;
         this.title = this.txtlocating;
         this.layerGroup = new LayerGroup<any>();
     }
@@ -54,13 +54,42 @@ export class HomePage {
     // The below function is added
     ionViewDidEnter() {
         this._initialiseTranslation();
-        this.showCurrentCanton();
+        this.watchPosition();
+    }
+
+    ionViewDidLeave() {
+        if (this.watchId != null) {
+            console.log('clearWatch with id ' + this.watchId);
+            Plugins.Geolocation.clearWatch({ id: this.watchId });
+        }
+    }
+
+    watchPosition() {
+        this.watchId = Geolocation.watchPosition({ enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}, (position, err) => {
+            console.log('subscribed to watchPosition ' + this.watchId);
+            if (err){
+              console.log('failed to receive position due to ' + err);
+              this.showNoCanton();
+            }else{
+                console.log('received location lat: ' + position.coords.latitude + '; lng: ' + position.coords.longitude);
+
+                this.latitude = position.coords.latitude;
+                this.longitude = position.coords.longitude;
+                this.accuracy = position.coords.accuracy;
+                this.showCanton();
+            }
+
+        });
+    }
+
+    centerLocation(){
+        this.map.panTo([this.latitude, this.longitude]);
     }
 
     // The below function is added
-    showCurrentCanton() {
+    deprecated_showCurrentCanton() {
 
-        Geolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false}).then((resp) => {
+        Geolocation.getCurrentPosition({enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}).then((resp) => {
 
             this.latitude = resp.coords.latitude;
             this.longitude = resp.coords.longitude;
@@ -82,20 +111,25 @@ export class HomePage {
 
     showNoCanton() {
         this.setupMap();
+        this.title = '';
         this.map.setView([47.0, 8.3], 8);
     }
 
     showCanton() {
+
         this.setupMap();
         this.abbr = this.geoService.findCanton(this.longitude, this.latitude);
+        console.log('abbr=' + this.abbr);
 
         if (this.abbr === undefined) {
+
             this.map.setView([47.0, 8.3], 8);
             this.presentOutsideSwitzerlandAlert();
+
         } else {
 
             const cantonDisplay: CantonDisplay = CantonDisplay[this.abbr];
-            this.title = this.txtyouareat + ' ' + cantonDisplay.label;
+            // this.title = this.txtyouareat + ' ' + cantonDisplay.label;
 
             const baseIcon = icon({
                 iconUrl: '/assets/icon/base-marker.png',
@@ -152,34 +186,36 @@ export class HomePage {
 
             // finally add all objects to the map
             this.map.addLayer(this.layerGroup);
+            if (this.doCenter){
+                this.mvs = this.geoService.calculateMapViewSettings(this.abbr);
+                this.map.setView([this.mvs.centerLat, this.mvs.centerLng], this.mvs.zoom);
+                this.doCenter = false; // now the user takes control of zoom and centering
+            }
 
-            this.mvs = this.geoService.calculateMapViewSettings(this.abbr);
-            // console.log('map setView center' + mvs.centerLng + ',' + mvs.centerLng + ' zoom 10');
-            // center to values given by bbox
-            this.map.setView([this.mvs.centerLat, this.mvs.centerLng], this.mvs.zoom);
+            this.title = this.txtyouareat + ' ' + cantonDisplay.label;
+            console.log('title set to ' + this.txtyouareat + ' ' + cantonDisplay.label);
+
 
         }
 
     }
 
+    setTitle(){
+        this.title = this.txtyouareat + ' ' + this.abbr;
+    }
+
     setupMap() {
         if (this.map === undefined) {
 
-            const tileUrlOffline = '/assets/osmtiles/{z}/{x}/{y}.png';
-            const tileUrlOnline = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-            const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-            // tslint:disable-next-line:max-line-length
-            // @ts-ignore
-            this.map = new L.Map('map', {crs: CRS.EPSG3857,
-                worldCopyJump: false, minZoom: 7, maxZoom: 11,
-                layers: [
-                    L.tileLayer(tileUrlOffline, { minZoom: 7, maxZoom: 11, attribution})
-                ]
-            });
+            const tileUrlOffline = '/assets/stctiles/{z}/{x}/{y}.jpeg';
+            const attribution = 'Map data © <a href="https://geo.admin.ch">geo.admin.ch</a>';
+
+            this.map = new L.Map('map', {crs: CRS.EPSG3857, minZoom: 7, maxZoom: 12});
+            L.tileLayer(tileUrlOffline, { minZoom: 7, maxZoom: 12, attribution}).addTo(this.map);
 
             // tslint:disable-next-line:one-variable-per-declaration
-            const southWest = latLng(45.16, 5.3), // Grenoble
-                northEast = latLng(48.18, 10.9); // München
+            const southWest = latLng(45.24, 5.3), // Grenoble
+                northEast = latLng(48.10, 10.9); // München
 
             const bounds = latLngBounds(southWest, northEast);
             this.map.setMaxBounds(bounds);
@@ -224,7 +260,8 @@ export class HomePage {
             message: this.txtoutsidech,
             buttons: [this.txtdismiss]
         }).then(alertEl => alertEl.present());
-
+        this.title = '';
+        this.doCenter = true;
     }
 
     simKt(abbr: string) {
@@ -232,6 +269,7 @@ export class HomePage {
         this.latitude = cantonDisplay.lat;
         this.longitude = cantonDisplay.lng;
         this.accuracy = 10;
+        this.doCenter = true;
         this.showCanton();
     }
 
@@ -243,6 +281,7 @@ export class HomePage {
         this.latitude = cantonDisplay.lat;
         this.longitude = cantonDisplay.lng;
         this.accuracy = 10;
+        this.doCenter = true;
         this.showCanton();
     }
 
@@ -252,7 +291,7 @@ export class HomePage {
         this.latitude = 47.503040;
         this.longitude = 9.747070;
         this.accuracy = 10;
-
+        this.doCenter = true;
         this.showCanton();
     }
 
@@ -261,7 +300,7 @@ export class HomePage {
         this.latitude = 47.495701;
         this.longitude = 9.463580;
         this.accuracy = 10;
-
+        this.doCenter = true;
         this.showCanton();
     }
 

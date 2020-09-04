@@ -35,4 +35,5 @@ out-tsc
 
 /src/assets/tiles
 /src/assets/osmtiles
+/src/assets/stctiles
 /out/*

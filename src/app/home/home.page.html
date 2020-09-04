@@ -55,6 +55,10 @@
                     <ion-icon name="locate" slot="start"></ion-icon>
                     <ion-label>Ausland</ion-label>
                 </ion-item>
+                <ion-item [routerDirection]="'root'" (click)="setTitle()">
+                    <ion-icon name="locate" slot="start"></ion-icon>
+                    <ion-label>set Title</ion-label>
+                </ion-item>
                 <ion-item [routerDirection]="'root'" (click)="simRandom()">
                     <ion-icon name="locate" slot="start"></ion-icon>
                     <ion-label>Zufall</ion-label>
@@ -73,8 +77,8 @@
                 {{title}}
             </ion-title>
             <ion-buttons slot="end">
-                <ion-button id="locate" [routerDirection]="'root'" (click)="showCurrentCanton()">
-                    <ion-icon slot="start" name="refresh"></ion-icon>
+                <ion-button id="locate" [routerDirection]="'root'" (click)="centerLocation()">
+                    <ion-icon slot="start" name="locate"></ion-icon>
                 </ion-button>
             </ion-buttons>
         </ion-toolbar>

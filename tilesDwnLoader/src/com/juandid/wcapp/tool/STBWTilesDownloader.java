@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TilesDownloader {
+public class STBWTilesDownloader {
 
     public static void main(String[] args) {
 
@@ -33,7 +33,7 @@ public class TilesDownloader {
         tileRanges.add(new TileRange(9, 262, 272, 176, 183));
         tileRanges.add(new TileRange(10, 527, 542, 355, 365));
         tileRanges.add(new TileRange(11, 1052, 1087, 711, 731));
-        tileRanges.add(new TileRange(12, 2116, 2168, 1426, 1461));
+        //tileRanges.add(new TileRange(12, 2116, 2168, 1426, 1461));
 
         for (int i = 0; i < tileRanges.size(); i++) {
             TileRange tileRange = tileRanges.get(i);
