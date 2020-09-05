@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, NgZone} from '@angular/core';
+import * as L from 'leaflet';
 import {CRS, icon, LatLng, latLng, latLngBounds, LayerGroup, marker, polygon} from 'leaflet';
 import {CallbackID, Plugins} from '@capacitor/core';
 
@@ -7,7 +8,7 @@ import {AlertController} from '@ionic/angular';
 import {CantonDisplay} from '../CantonDisplay';
 import {TranslateService} from '@ngx-translate/core';
 import {MapViewSettings} from '../MapViewSettings';
-import * as L from 'leaflet';
+
 const {Geolocation} = Plugins;
 
 
@@ -44,7 +45,8 @@ export class HomePage {
     constructor(
         private alertCtrl: AlertController,
         private translate: TranslateService,
-        private geoService: GeoService
+        private geoService: GeoService,
+        private zone: NgZone
     ) {
         this.doCenter = true;
         this.title = this.txtlocating;
@@ -59,30 +61,36 @@ export class HomePage {
 
     ionViewDidLeave() {
         if (this.watchId != null) {
-            console.log('clearWatch with id ' + this.watchId);
-            Plugins.Geolocation.clearWatch({ id: this.watchId });
+            // console.log('clearWatch with id ' + this.watchId);
+            Plugins.Geolocation.clearWatch({id: this.watchId});
         }
     }
 
     watchPosition() {
-        this.watchId = Geolocation.watchPosition({ enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}, (position, err) => {
-            console.log('subscribed to watchPosition ' + this.watchId);
-            if (err){
-              console.log('failed to receive position due to ' + err);
-              this.showNoCanton();
-            }else{
-                console.log('received location lat: ' + position.coords.latitude + '; lng: ' + position.coords.longitude);
+        try {
+            this.watchId = Geolocation.watchPosition({enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}, (position, err) => {
+                // console.log('subscribed to watchPosition ' + this.watchId);
+                if (err) {
+                    // console.log('failed to receive position: ' + err);
+                    this.showNoCanton();
+                } else {
+                    // console.log('received location lat: ' + position.coords.latitude + '; lng: ' + position.coords.longitude);
+                    this.zone.run(() => {
+                        this.latitude = position.coords.latitude;
+                        this.longitude = position.coords.longitude;
+                        this.accuracy = position.coords.accuracy;
+                        this.showCanton();
+                    });
 
-                this.latitude = position.coords.latitude;
-                this.longitude = position.coords.longitude;
-                this.accuracy = position.coords.accuracy;
-                this.showCanton();
-            }
+                }
+            });
+        } catch (e) {
+            console.error('failed to receive position due to ' + e);
+        }
 
-        });
     }
 
-    centerLocation(){
+    centerLocation() {
         this.map.panTo([this.latitude, this.longitude]);
     }
 
@@ -119,7 +127,7 @@ export class HomePage {
 
         this.setupMap();
         this.abbr = this.geoService.findCanton(this.longitude, this.latitude);
-        console.log('abbr=' + this.abbr);
+        // console.log('abbr=' + this.abbr);
 
         if (this.abbr === undefined) {
 
@@ -186,22 +194,18 @@ export class HomePage {
 
             // finally add all objects to the map
             this.map.addLayer(this.layerGroup);
-            if (this.doCenter){
+            if (this.doCenter) {
                 this.mvs = this.geoService.calculateMapViewSettings(this.abbr);
                 this.map.setView([this.mvs.centerLat, this.mvs.centerLng], this.mvs.zoom);
                 this.doCenter = false; // now the user takes control of zoom and centering
             }
 
             this.title = this.txtyouareat + ' ' + cantonDisplay.label;
-            console.log('title set to ' + this.txtyouareat + ' ' + cantonDisplay.label);
+            // console.log('title set to ' + this.txtyouareat + ' ' + cantonDisplay.label);
 
 
         }
 
-    }
-
-    setTitle(){
-        this.title = this.txtyouareat + ' ' + this.abbr;
     }
 
     setupMap() {
@@ -211,7 +215,7 @@ export class HomePage {
             const attribution = 'Map data © <a href="https://geo.admin.ch">geo.admin.ch</a>';
 
             this.map = new L.Map('map', {crs: CRS.EPSG3857, minZoom: 7, maxZoom: 12});
-            L.tileLayer(tileUrlOffline, { minZoom: 7, maxZoom: 12, attribution}).addTo(this.map);
+            L.tileLayer(tileUrlOffline, {minZoom: 7, maxZoom: 12, attribution}).addTo(this.map);
 
             // tslint:disable-next-line:one-variable-per-declaration
             const southWest = latLng(45.24, 5.3), // Grenoble
