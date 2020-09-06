@@ -4,7 +4,7 @@ import {CRS, icon, LatLng, latLng, latLngBounds, LayerGroup, marker, polygon} fr
 import {CallbackID, Plugins} from '@capacitor/core';
 
 import {GeoService} from '../geo.service';
-import {AlertController} from '@ionic/angular';
+import {AlertController, MenuController} from '@ionic/angular';
 import {CantonDisplay} from '../CantonDisplay';
 import {TranslateService} from '@ngx-translate/core';
 import {MapViewSettings} from '../MapViewSettings';
@@ -43,6 +43,7 @@ export class HomePage {
     txtyouareat: string;
 
     constructor(
+        public menuCtrl: MenuController,
         private alertCtrl: AlertController,
         private translate: TranslateService,
         private geoService: GeoService,
@@ -64,6 +65,10 @@ export class HomePage {
             // console.log('clearWatch with id ' + this.watchId);
             Plugins.Geolocation.clearWatch({id: this.watchId});
         }
+    }
+
+    ionViewWillEnter() {
+        this.menuCtrl.enable(false);
     }
 
     watchPosition() {
