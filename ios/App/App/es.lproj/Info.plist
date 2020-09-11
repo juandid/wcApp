@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>de_DE</string>
+	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleExecutable</key>
@@ -41,9 +41,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>To Take Photos and Video</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Erlaube Ortung immer, damit die App den Kanton anzeigen kann, indem du dich gerade befindest?</string>
+	<string>Always allow location so that the app can display the canton in which you are currently located?</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Erlaube Ortung, damit die App den Kanton anzeigen kann, indem du dich gerade befindest?</string>
+	<string>Allow location so that the app can display the canton in which you are currently located?</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>To Record Audio With Video</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
