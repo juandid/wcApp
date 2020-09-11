@@ -1,10 +1,10 @@
-import {Component, NgZone} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import {CRS, icon, LatLng, latLng, latLngBounds, LayerGroup, marker, polygon} from 'leaflet';
 import {CallbackID, Plugins} from '@capacitor/core';
-
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import {GeoService} from '../geo.service';
-import {AlertController, MenuController} from '@ionic/angular';
+import {AlertController, MenuController, Platform} from '@ionic/angular';
 import {CantonDisplay} from '../CantonDisplay';
 import {TranslateService} from '@ngx-translate/core';
 import {MapViewSettings} from '../MapViewSettings';
@@ -17,13 +17,14 @@ const {Geolocation} = Plugins;
     templateUrl: 'home.page.html',
     styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit{
 
     // map presentation
     map: L.Map;
     layerGroup: LayerGroup;
     mvs: MapViewSettings;
     doCenter: boolean;
+    orientation: string;
     // geolocation
     latitude: number;
     longitude: number;
@@ -47,11 +48,37 @@ export class HomePage {
         private alertCtrl: AlertController,
         private translate: TranslateService,
         private geoService: GeoService,
-        private zone: NgZone
+        private zone: NgZone,
+        private screenOrientation: ScreenOrientation,
+        public platform: Platform,
     ) {
         this.doCenter = true;
         this.title = this.txtlocating;
         this.layerGroup = new LayerGroup<any>();
+
+        // get current
+        this.orientation = this.screenOrientation.type; // logs the current orientation, example: 'landscape'
+
+        // detect orientation changes
+        this.screenOrientation.onChange().subscribe(
+            () => {
+                // console.log('orientation changed ' + this.screenOrientation.type);
+                this.orientation = this.screenOrientation.type;
+                this.invalidateSize();
+            }
+        );
+    }
+
+    ngOnInit() {
+
+        this.platform.pause.subscribe(async () => {
+            // console.log('Pause event detected');
+        });
+
+        this.platform.resume.subscribe(async () => {
+            // console.log('Resume event detected');
+            this.invalidateSize();
+        });
     }
 
     // The below function is added
@@ -97,6 +124,10 @@ export class HomePage {
 
     centerLocation() {
         this.map.panTo([this.latitude, this.longitude]);
+    }
+
+    invalidateSize() {
+        this.map.invalidateSize();
     }
 
     // The below function is added

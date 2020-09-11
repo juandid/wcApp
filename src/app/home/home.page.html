@@ -72,6 +72,11 @@
             <ion-title>
                 {{title}}
             </ion-title>
+            <!-- ion-buttons slot="end">
+                <ion-button id="is" [routerDirection]="'root'" (click)="invalidateSize()">
+                    <ion-icon slot="start" name="bandage-outline"></ion-icon>
+                </ion-button>
+            </ion-buttons -->
             <ion-buttons slot="end">
                 <ion-button id="locate" [routerDirection]="'root'" (click)="centerLocation()">
                     <ion-icon slot="start" name="locate"></ion-icon>
