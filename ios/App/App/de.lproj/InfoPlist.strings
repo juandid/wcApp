@@ -1,0 +1,2 @@
+NSLocationAlwaysUsageDescription = "Erlaube Ortung immer, damit die App den Kanton anzeigen kann, indem du dich gerade befindest?";
+NSLocationWhenInUseUsageDescription = "Erlaube Ortung, damit die App den Kanton anzeigen kann, indem du dich gerade befindest?";

@@ -1,0 +1,2 @@
+NSLocationAlwaysUsageDescription = "Consenti sempre la posizione in modo che l'app possa visualizzare il cantone in cui ti trovi attualmente?";
+NSLocationWhenInUseUsageDescription = "Consenti la posizione in modo che l'app possa visualizzare il cantone in cui ti trovi attualmente?";

@@ -1,0 +1,2 @@
+NSLocationAlwaysUsageDescription = "Always allow location so that the app can display the canton in which you are currently located?";
+NSLocationWhenInUseUsageDescription = "Allow location so that the app can display the canton in which you are currently located?";

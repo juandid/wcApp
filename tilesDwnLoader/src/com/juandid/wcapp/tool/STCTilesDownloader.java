@@ -7,6 +7,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,13 +30,24 @@ public class STCTilesDownloader {
         tileRanges.add(new TileRange(9, 262, 272, 176, 183));
         tileRanges.add(new TileRange(10, 527, 542, 355, 365));
         tileRanges.add(new TileRange(11, 1052, 1087, 711, 731));
-        tileRanges.add(new TileRange(12, 2116, 2168, 1426, 1461));
+        tileRanges.add(new TileRange(12, 2113, 2168, 1426, 1461));
 
         for (int i = 0; i < tileRanges.size(); i++) {
             TileRange tileRange = tileRanges.get(i);
+
+            Polygon polygon = null;
+            if(tileRange.zoom >= 10){
+                polygon = ChPolygon.getPolygonForZoom(tileRange.zoom);
+            }else{
+                polygon = ChPolygon.getDummyPolygon(1000);
+            }
+
             for (int row = tileRange.rowLower; row <= tileRange.rowUpper; row++) {
                 for (int col = tileRange.colLower; col <= tileRange.colUpper; col++) {
-                    String sourceUrlStr = String.format("https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/%d/%d/%d.jpeg", tileRange.zoom, row, col);
+
+
+                    boolean tileRequired = polygon.contains(row,col);
+
                     String folderStr = String.format("src/assets/stctiles/%d/%d", tileRange.zoom, row);
                     String targetFileStr = String.format("src/assets/stctiles/%d/%d/%d.jpeg", tileRange.zoom, row, col);
                     try{
@@ -51,11 +63,25 @@ public class STCTilesDownloader {
                     try {
                         File imgFile = new File(targetFileStr);
                         if (isFileExists(imgFile)){
-                            // do nothing
-                            System.out.println("skip " + targetFileStr);
+
+                            if(tileRequired){
+                                // do nothing
+                                System.out.println("skip " + targetFileStr);
+                            }else{
+                                // do nothing
+                                System.out.println("remove tile " + targetFileStr);
+                                imgFile.delete();
+                            }
+
                         }else{
-                            int code = downloadImage(sourceUrlStr, targetFileStr);
-                            System.out.println("done " + targetFileStr + " with status code " + code);
+                            if(tileRequired){
+                                String sourceUrlStr = String.format("https://wmts20.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/%d/%d/%d.jpeg", tileRange.zoom, row, col);
+                                int code = downloadImage(sourceUrlStr, targetFileStr);
+                                System.out.println("done " + targetFileStr + " with status code " + code);
+                            }else{
+                                System.out.println("skip to download " + targetFileStr);
+                            }
+
                         }
                     } catch (Exception e) {
                         System.err.println("failed to download picture " + e.getMessage());

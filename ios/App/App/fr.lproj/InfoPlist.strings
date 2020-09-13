@@ -1,0 +1,2 @@
+NSLocationAlwaysUsageDescription = "Toujours autoriser la localisation pour que l'application puisse afficher le canton dans lequel vous vous trouvez actuellement?";
+NSLocationWhenInUseUsageDescription = "Autoriser la localisation pour que l'application puisse afficher le canton dans lequel vous vous trouvez actuellement?";

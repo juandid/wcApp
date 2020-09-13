@@ -173,7 +173,9 @@ export class HomePage implements OnInit{
         } else {
 
             const cantonDisplay: CantonDisplay = CantonDisplay[this.abbr];
-            // this.title = this.txtyouareat + ' ' + cantonDisplay.label;
+            this.translate.get(this.abbr).subscribe((label: string) => {
+                this.title = this.txtyouareat + ' ' + label;
+            });
 
             const baseIcon = icon({
                 iconUrl: '/assets/icon/base-marker.png',
@@ -235,10 +237,6 @@ export class HomePage implements OnInit{
                 this.map.setView([this.mvs.centerLat, this.mvs.centerLng], this.mvs.zoom);
                 this.doCenter = false; // now the user takes control of zoom and centering
             }
-
-            this.title = this.txtyouareat + ' ' + cantonDisplay.label;
-            // console.log('title set to ' + this.txtyouareat + ' ' + cantonDisplay.label);
-
 
         }
 
