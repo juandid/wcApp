@@ -171,7 +171,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21DC891F250E4E2600C1B890 /* Info.plist in Resources */,
 				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				21DC8920250E4EEC00C1B890 /* InfoPlist.strings in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
@@ -368,7 +367,7 @@
 				CODE_SIGN_ENTITLEMENTS = "App/Kanton?.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 994T48734A;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -395,7 +394,7 @@
 				CODE_SIGN_ENTITLEMENTS = "App/Kanton?.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 994T48734A;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
