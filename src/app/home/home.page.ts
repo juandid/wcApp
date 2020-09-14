@@ -42,6 +42,7 @@ export class HomePage implements OnInit{
     txtdismiss: string;
     txtlocating: string;
     txtyouareat: string;
+    hintActive: boolean;
 
     constructor(
         public menuCtrl: MenuController,
@@ -53,6 +54,7 @@ export class HomePage implements OnInit{
         public platform: Platform,
     ) {
         this.doCenter = true;
+        this.hintActive = false;
         this.title = this.txtlocating;
         this.layerGroup = new LayerGroup<any>();
 
@@ -70,11 +72,9 @@ export class HomePage implements OnInit{
     }
 
     ngOnInit() {
-
         this.platform.pause.subscribe(async () => {
             // console.log('Pause event detected');
         });
-
         this.platform.resume.subscribe(async () => {
             // console.log('Resume event detected');
             this.invalidateSize();
@@ -84,13 +84,17 @@ export class HomePage implements OnInit{
     // The below function is added
     ionViewDidEnter() {
         this._initialiseTranslation();
-        this.watchPosition();
+        this.setupGeolocationWatch();
     }
 
     ionViewDidLeave() {
+        this.clearGeolocationWatch();
+    }
+
+    clearGeolocationWatch() {
         if (this.watchId != null) {
-            // console.log('clearWatch with id ' + this.watchId);
             Plugins.Geolocation.clearWatch({id: this.watchId});
+            this.watchId = null;
         }
     }
 
@@ -98,28 +102,29 @@ export class HomePage implements OnInit{
         this.menuCtrl.enable(false);
     }
 
-    watchPosition() {
-        try {
-            this.watchId = Geolocation.watchPosition({enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}, (position, err) => {
-                // console.log('subscribed to watchPosition ' + this.watchId);
-                if (err) {
-                    // console.log('failed to receive position: ' + err);
-                    this.showNoCanton();
-                } else {
-                    // console.log('received location lat: ' + position.coords.latitude + '; lng: ' + position.coords.longitude);
-                    this.zone.run(() => {
-                        this.latitude = position.coords.latitude;
-                        this.longitude = position.coords.longitude;
-                        this.accuracy = position.coords.accuracy;
-                        this.showCanton();
-                    });
+    setupGeolocationWatch() {
+        if (this.watchId == null) {
+            try {
+                this.watchId = Geolocation.watchPosition({enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}, (position, err) => {
+                    // console.log('subscribed to watchPosition ' + this.watchId);
+                    if (err) {
+                        // console.log('failed to receive position: ' + err);
+                        this.showNoCanton();
+                    } else {
+                        // console.log('received location lat: ' + position.coords.latitude + '; lng: ' + position.coords.longitude);
+                        this.zone.run(() => {
+                            this.latitude = position.coords.latitude;
+                            this.longitude = position.coords.longitude;
+                            this.accuracy = position.coords.accuracy;
+                            this.showCanton();
+                        });
 
-                }
-            });
-        } catch (e) {
-            console.error('failed to receive position due to ' + e);
+                    }
+                });
+            } catch (e) {
+                console.error('failed to receive position due to ' + e);
+            }
         }
-
     }
 
     centerLocation() {
@@ -128,29 +133,6 @@ export class HomePage implements OnInit{
 
     invalidateSize() {
         this.map.invalidateSize();
-    }
-
-    // The below function is added
-    deprecated_showCurrentCanton() {
-
-        Geolocation.getCurrentPosition({enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}).then((resp) => {
-
-            this.latitude = resp.coords.latitude;
-            this.longitude = resp.coords.longitude;
-            this.accuracy = resp.coords.accuracy;
-
-            this.showCanton();
-
-        }).catch((error) => {
-            this.alertCtrl.create({
-                animated: true,
-                header: this.txterror,
-                message: this.txtlocatingerror,
-                buttons: [this.txtdismiss]
-            }).then(alertEl => alertEl.present());
-            this.showNoCanton();
-        });
-
     }
 
     showNoCanton() {
@@ -291,15 +273,22 @@ export class HomePage implements OnInit{
     }
 
     presentOutsideSwitzerlandAlert() {
-
-        this.alertCtrl.create({
-            animated: true,
-            header: this.txthint,
-            message: this.txtoutsidech,
-            buttons: [this.txtdismiss]
-        }).then(alertEl => alertEl.present());
         this.title = '';
         this.doCenter = true;
+        if (this.hintActive === false){
+            this.hintActive = true;
+            this.alertCtrl.create({
+                animated: true,
+                header: this.txthint,
+                message: this.txtoutsidech,
+                buttons: [{
+                    text: this.txtdismiss,
+                    handler: () => {
+                        this.hintActive = false;
+                    }
+                }]
+            }).then(alertEl => alertEl.present());
+        }
     }
 
     simKt(abbr: string) {
