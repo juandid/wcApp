@@ -2,10 +2,15 @@
   "menu": {
     "title": "Menu"
   },
+  "txt": {
+    "location": {
+      "error": "Il y a un problème avec les services de localisation.",
+      "permission-missing": "Les services de localisation sont désactivés"
+    }
+  },
   "txthint": "Remarque",
   "txterror": "Erreur",
   "txtoutsidech": "Vous n'êtes pas en Suisse. Aucun canton ne peut donc être déterminé.",
-  "txtlocatingerror": "Il y a un problème avec l'emplacement.",
   "txtdismiss": "D'accord",
   "txtlocating": "Trouver la position...",
   "txtyouareat": "Canton de",

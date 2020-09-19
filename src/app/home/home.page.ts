@@ -1,8 +1,8 @@
 import {Component, NgZone, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import {CRS, icon, LatLng, latLng, latLngBounds, LayerGroup, marker, polygon} from 'leaflet';
-import {CallbackID, Plugins} from '@capacitor/core';
-import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
+import {CallbackID, Capacitor, PermissionType, Plugins} from '@capacitor/core';
+import {ScreenOrientation} from '@ionic-native/screen-orientation/ngx';
 import {GeoService} from '../geo.service';
 import {AlertController, MenuController, Platform} from '@ionic/angular';
 import {CantonDisplay} from '../CantonDisplay';
@@ -39,10 +39,12 @@ export class HomePage implements OnInit{
     txterror: string;
     txtoutsidech: string;
     txtlocatingerror: string;
+    txtlocpermmissing: string;
     txtdismiss: string;
     txtlocating: string;
     txtyouareat: string;
     hintActive: boolean;
+
 
     constructor(
         public menuCtrl: MenuController,
@@ -84,6 +86,14 @@ export class HomePage implements OnInit{
     // The below function is added
     ionViewDidEnter() {
         this._initialiseTranslation();
+
+        Capacitor.Plugins.Permissions.query({name: PermissionType.Geolocation}).then(
+            result => {
+                console.log('Permissions.Geolocation result: ' + result.state);
+            },
+            err => { alert(err); }
+        );
+
         this.setupGeolocationWatch();
     }
 
@@ -108,7 +118,7 @@ export class HomePage implements OnInit{
                 this.watchId = Geolocation.watchPosition({enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}, (position, err) => {
                     // console.log('subscribed to watchPosition ' + this.watchId);
                     if (err) {
-                        // console.log('failed to receive position: ' + err);
+                        this.title = this.txtlocpermmissing;
                         this.showNoCanton();
                     } else {
                         // console.log('received location lat: ' + position.coords.latitude + '; lng: ' + position.coords.longitude);
@@ -122,6 +132,7 @@ export class HomePage implements OnInit{
                     }
                 });
             } catch (e) {
+                this.title = this.txtlocatingerror;
                 console.error('failed to receive position due to ' + e);
             }
         }
@@ -137,7 +148,6 @@ export class HomePage implements OnInit{
 
     showNoCanton() {
         this.setupMap();
-        this.title = '';
         this.map.setView([47.0, 8.3], 8);
     }
 
@@ -258,8 +268,11 @@ export class HomePage implements OnInit{
         this.translate.get('txtoutsidech').subscribe((res: string) => {
             this.txtoutsidech = res;
         });
-        this.translate.get('txtlocatingerror').subscribe((res: string) => {
+        this.translate.get('txt.location.error').subscribe((res: string) => {
             this.txtlocatingerror = res;
+        });
+        this.translate.get('txt.location.permission-missing').subscribe((res: string) => {
+            this.txtlocpermmissing = res;
         });
         this.translate.get('txtdismiss').subscribe((res: string) => {
             this.txtdismiss = res;

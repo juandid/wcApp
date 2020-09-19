@@ -2,10 +2,15 @@
   "menu": {
     "title": "Menu"
   },
+  "txt": {
+    "location": {
+      "error": "Es gibt ein Problem mit der Ortung.",
+      "permission-missing": "Ortungsdienste sind deaktiviert"
+    }
+  },
   "txthint": "Hinweis",
   "txterror": "Fehler",
   "txtoutsidech": "Du befindest dich nicht in der Schweiz. Darum kann kein Kanton ermittelt werden.",
-  "txtlocatingerror": "Es gibt ein Problem mit der Ortung.",
   "txtdismiss": "Verstanden",
   "txtlocating": "Ermittle Position...",
   "txtyouareat": "Kanton",
