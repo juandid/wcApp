@@ -5,7 +5,7 @@
   "txt": {
     "location": {
       "error": "There is a problem with the location service.",
-      "permission-missing": "Location services are disabled"
+      "permission-missing": "Location disabled"
     }
   },
   "txthint": "Note",

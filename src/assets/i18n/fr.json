@@ -5,7 +5,7 @@
   "txt": {
     "location": {
       "error": "Il y a un problème avec les services de localisation.",
-      "permission-missing": "Les services de localisation sont désactivés"
+      "permission-missing": "Localisation désactivé"
     }
   },
   "txthint": "Remarque",

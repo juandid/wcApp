@@ -17,34 +17,33 @@ const {Geolocation} = Plugins;
     templateUrl: 'home.page.html',
     styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit{
+export class HomePage implements OnInit {
 
     // map presentation
-    map: L.Map;
-    layerGroup: LayerGroup;
-    mvs: MapViewSettings;
-    doCenter: boolean;
-    orientation: string;
+    private map: L.Map;
+    private layerGroup: LayerGroup;
+    private mvs: MapViewSettings;
+    private doCenter: boolean;
+    private orientation: string;
     // geolocation
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-    watchId: CallbackID;
+    private latitude: number;
+    private longitude: number;
+    private accuracy: number;
+    private watchId: CallbackID;
+    private geolocationPermissionGranted: boolean;
     // canton selected
-    title: string;
-    abbr: string;
+    public title: string;
+    private abbr: string;
 
-    // Hint Outside CH
-    txthint: string;
-    txterror: string;
-    txtoutsidech: string;
-    txtlocatingerror: string;
-    txtlocpermmissing: string;
-    txtdismiss: string;
-    txtlocating: string;
-    txtyouareat: string;
-    hintActive: boolean;
-
+    private txthint: string;
+    private txterror: string;
+    private txtoutsidech: string;
+    private txtlocatingerror: string;
+    private txtlocpermmissing: string;
+    private txtdismiss: string;
+    private txtlocating: string;
+    private txtyouareat: string;
+    private hintActive: boolean;
 
     constructor(
         public menuCtrl: MenuController,
@@ -76,9 +75,11 @@ export class HomePage implements OnInit{
     ngOnInit() {
         this.platform.pause.subscribe(async () => {
             // console.log('Pause event detected');
+            this.clearGeolocationWatch();
         });
         this.platform.resume.subscribe(async () => {
             // console.log('Resume event detected');
+            this.setupGeolocationWatch();
             this.invalidateSize();
         });
     }
@@ -86,22 +87,11 @@ export class HomePage implements OnInit{
     // The below function is added
     ionViewDidEnter() {
         this._initialiseTranslation();
-
-        Capacitor.Plugins.Permissions.query({name: PermissionType.Geolocation}).then(
-            result => {
-                console.log('Permissions.Geolocation result: ' + result.state);
-            },
-            err => { alert(err); }
-        );
-
         this.setupGeolocationWatch();
     }
 
-    ionViewDidLeave() {
-        this.clearGeolocationWatch();
-    }
-
     clearGeolocationWatch() {
+        // console.log('clearGeolocationWatch');
         if (this.watchId != null) {
             Plugins.Geolocation.clearWatch({id: this.watchId});
             this.watchId = null;
@@ -112,28 +102,55 @@ export class HomePage implements OnInit{
         this.menuCtrl.enable(false);
     }
 
+    checkGeolocationPermission(){
+        Capacitor.Plugins.Permissions.query({name: PermissionType.Geolocation}).then(
+            result => {
+                this.geolocationPermissionGranted = (result.state === 'granted');
+                // console.log('Permissions.Geolocation result: ' + result.state);
+                if (this.geolocationPermissionGranted){
+                    // keep title as is
+                }else{
+                    this.title = this.txtlocpermmissing;
+                }
+            },
+            err => {
+                console.error(err);
+            }
+        );
+    }
+
     setupGeolocationWatch() {
         if (this.watchId == null) {
             try {
-                this.watchId = Geolocation.watchPosition({enableHighAccuracy: false, timeout: 5000, maximumAge: 3000}, (position, err) => {
+                this.watchId = Geolocation.watchPosition({
+                    enableHighAccuracy: false,
+                    timeout: 5000,
+                    maximumAge: 3000
+                }, (position, err) => {
                     // console.log('subscribed to watchPosition ' + this.watchId);
                     if (err) {
-                        this.title = this.txtlocpermmissing;
-                        this.showNoCanton();
+                        this.zone.run(() => {
+                            this.showNoCanton();
+                            this.title = '';
+                            this.checkGeolocationPermission();
+                        });
                     } else {
-                        // console.log('received location lat: ' + position.coords.latitude + '; lng: ' + position.coords.longitude);
+                        // console.log('received lat: ' + position.coords.latitude + '; lng: ' + position.coords.longitude);
                         this.zone.run(() => {
                             this.latitude = position.coords.latitude;
                             this.longitude = position.coords.longitude;
                             this.accuracy = position.coords.accuracy;
                             this.showCanton();
                         });
-
                     }
                 });
+
             } catch (e) {
-                this.title = this.txtlocatingerror;
-                console.error('failed to receive position due to ' + e);
+                this.zone.run(() => {
+                    this.showNoCanton();
+                    console.error('failed to receive position due to ' + e);
+                    this.presentAlert(this.txtlocatingerror);
+                });
             }
         }
     }
@@ -160,7 +177,7 @@ export class HomePage implements OnInit{
         if (this.abbr === undefined) {
 
             this.map.setView([47.0, 8.3], 8);
-            this.presentOutsideSwitzerlandAlert();
+            this.presentAlert(this.txtoutsidech);
 
         } else {
 
@@ -285,15 +302,15 @@ export class HomePage implements OnInit{
         });
     }
 
-    presentOutsideSwitzerlandAlert() {
+    presentAlert(txt: string) {
         this.title = '';
         this.doCenter = true;
-        if (this.hintActive === false){
+        if (this.hintActive === false) {
             this.hintActive = true;
             this.alertCtrl.create({
                 animated: true,
                 header: this.txthint,
-                message: this.txtoutsidech,
+                message: txt,
                 buttons: [{
                     text: this.txtdismiss,
                     handler: () => {
